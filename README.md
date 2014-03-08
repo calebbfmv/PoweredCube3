@@ -20,6 +20,9 @@ TODO:
 - Full implementation of protocol
 - Survival mode implementation (health, hunger)
 - Implementing full Bukkit API
+  - "Fill in the blanks"
+  - Commands
+  - Full event implementation
 - Adding actions to blocks
 - Implementing mobs
 

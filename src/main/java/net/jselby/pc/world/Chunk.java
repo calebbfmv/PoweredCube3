@@ -84,9 +84,9 @@ public class Chunk implements Serializable {
                 }
 
                 for (double y = actualY - 5; y > 1; y--) {
-                    //blocks[x][(int)y][z] =
-                   //         new Block(Material.STONE, world,
-                    //                this, absChunkX + x, (int)y, absChunkZ + z);
+                    blocks[x][(int)y][z] =
+                            new Block(Material.STONE, world,
+                                    this, absChunkX + x, (int)y, absChunkZ + z);
                 }
                 blocks[x][1][z] =
                         new Block(Material.BEDROCK, world,

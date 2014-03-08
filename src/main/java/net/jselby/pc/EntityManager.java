@@ -29,7 +29,7 @@ import java.util.ArrayList;
  * This needs major changes - its just a placeholder for a future system.
  */
 public class EntityManager implements Serializable {
-    public final static double TRIGGER_RANGE = 2.5;
+    public final static double TRIGGER_RANGE = 2;
     private final ArrayList<Entity> entities = new ArrayList<Entity>();
 
     public void tick() {

@@ -16,14 +16,30 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package net.jselby.pc.network;
+package net.jselby.pc.blocks;
 
-import java.io.IOException;
 import java.io.Serializable;
 
 /**
- * Created by James on 2/18/14.
+ * Similar to a slot, but alot more portable
  */
-public abstract class WritableObject implements Serializable {
-    public abstract void write(StandardOutput out) throws IOException;
+public class ItemStack implements Serializable {
+    public int id;
+    public int count;
+    public byte data;
+
+    public ItemStack(int id) {
+        this.id = id;
+    }
+
+    public ItemStack(int id, byte data) {
+        this.id = id;
+        this.data = data;
+    }
+
+    public ItemStack(int id, byte data, int count) {
+        this.id = id;
+        this.data = data;
+        this.count = count;
+    }
 }

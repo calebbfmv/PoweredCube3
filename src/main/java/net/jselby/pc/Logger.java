@@ -39,7 +39,7 @@ public class Logger extends java.util.logging.Logger {
         print("ERROR", string);
     }
 
-    public void WARNING(String string) {
+    public void warning(String string) {
         print("WARNING", string);
     }
 

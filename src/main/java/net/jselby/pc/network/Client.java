@@ -21,6 +21,7 @@ package net.jselby.pc.network;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelHandlerContext;
+import net.jselby.pc.PlayerInventory;
 import net.jselby.pc.entities.FloatingItem;
 import net.jselby.pc.world.Chunk;
 import net.jselby.pc.world.PlayerCache;

@@ -24,12 +24,21 @@ import java.io.IOException;
  * Created by James on 2/18/14.
  */
 public class Slot extends WritableObject {
-    public short itemId;
-    public byte itemCount;
-    public short itemDamage;
+    public int position;
+    public int itemId;
+    public int itemCount = 1;
+    public byte itemDamage;
     public byte[] nbt = new byte[0];
 
-    public Slot(short itemId, byte itemCount, short itemDamage) {
+    public Slot(int position, int itemId, int itemCount, byte itemDamage) {
+        super();
+        this.position = position;
+        this.itemId = itemId;
+        this.itemCount = itemCount;
+        this.itemDamage = itemDamage;
+    }
+
+    public Slot(int itemId, int itemCount, byte itemDamage) {
         super();
         this.itemId = itemId;
         this.itemCount = itemCount;

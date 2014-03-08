@@ -137,8 +137,12 @@ public class World implements Serializable {
     }
 
     public void spawnFloatingItem(double x, double y, double z, int typeId, byte data) {
+        Random r = new Random();
         // Create entity
         FloatingItem i = new FloatingItem(PoweredCube.getInstance().getNextEntityID(), this, x, y, z, typeId, data);
+        i.xSpeed = (short) (r.nextInt(2000) - 1000);
+        i.ySpeed = (short) r.nextInt(1000);
+        i.zSpeed = (short) (r.nextInt(2000) - 1000);
         m.addEntity(i);
 
         // Show entity
@@ -150,7 +154,6 @@ public class World implements Serializable {
     public void removeEntity(Entity ent) {
 
         if (m.containsEntity(ent)) {
-            System.out.println("Removing entity of id: " + ent.id);
             m.removeEntity(ent);
 
             PacketOutDestroyEntities destroyEntities = new PacketOutDestroyEntities();

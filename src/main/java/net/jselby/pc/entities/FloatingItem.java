@@ -22,6 +22,7 @@ import net.jselby.pc.Entity;
 import net.jselby.pc.PoweredCube;
 import net.jselby.pc.network.Client;
 import net.jselby.pc.network.Slot;
+import net.jselby.pc.network.packets.mcplay.PacketOutCollectItem;
 import net.jselby.pc.network.packets.mcplay.PacketOutSpawnObject;
 import net.jselby.pc.world.World;
 
@@ -37,6 +38,7 @@ import java.io.Serializable;
 public class FloatingItem extends Entity {
     private int blockId;
     private byte data;
+    public int count = 1;
 
     public FloatingItem(int entityId, World w, double x, double y, double z, int blockId, byte data) {
         this.id = entityId;
@@ -60,7 +62,11 @@ public class FloatingItem extends Entity {
     public void onApproach(Client c) {
         // Client picks up item
         if (c.pickUpItem(this)) {
-            System.out.println("I was picked up by a client!");
+            // Make item fly towards player
+            PacketOutCollectItem collect = new PacketOutCollectItem();
+            collect.collectedEntityId = id;
+            collect.collectorEntityId = c.id;
+            PoweredCube.getInstance().distributePacket(collect);
             world.removeEntity(this);
         }
     }
@@ -71,8 +77,8 @@ public class FloatingItem extends Entity {
         packet.x = x;
         packet.y = y;
         packet.z = z;
-        packet.entityId = PoweredCube.getInstance().getNextEntityID();
-        packet.slot = new Slot((short)blockId, (byte)1, (short)data);
+        packet.entityId = id;
+        packet.slot = new Slot(blockId, count, data);
         packet.pitch = 12;
         packet.yaw = 12;
         packet.type = PacketOutSpawnObject.ObjectType.ITEM_STACK;

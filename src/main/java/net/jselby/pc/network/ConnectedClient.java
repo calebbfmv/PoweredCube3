@@ -20,6 +20,9 @@ package net.jselby.pc.network;
 
 import io.netty.channel.ChannelHandlerContext;
 import net.jselby.pc.ChatMessage;
+import net.jselby.pc.PlayerInventory;
+import net.jselby.pc.blocks.ItemStack;
+import net.jselby.pc.blocks.Material;
 import net.jselby.pc.entities.FloatingItem;
 import net.jselby.pc.world.Chunk;
 import net.jselby.pc.PoweredCube;
@@ -39,6 +42,10 @@ public class ConnectedClient extends Client {
     public World world;
     public int gamemode = 0;
 
+    public int selectedSlot = 0; // begins at inv.slots.length - 9, or 36
+
+    public PlayerInventory inv = new PlayerInventory(this);
+
     /**
      * Creates a ConnectedClient from a ALREADY existing connection.
      * @param ctx The context of the connection
@@ -53,6 +60,14 @@ public class ConnectedClient extends Client {
         // Check for the player "cache"
         if (cache == null) {
             cache = world.getPlayerCache(name);
+            if (cache.inventory != null) {
+                inv.setInventory(cache.inventory);
+                inv.updateAll();
+            } else {
+                // Give starting goods!
+                inv.addItem(new ItemStack(Material.DIAMOND_PICKAXE.getId(), (byte)0, 1));
+                inv.addItem(new ItemStack(Material.DIAMOND_SPADE.getId(), (byte)0, 1));
+            }
         }
 
         if (packet instanceof PacketInPlayer) {
@@ -106,7 +121,13 @@ public class ConnectedClient extends Client {
                 PacketInPlayerBlockPlacement.Directions dir = PacketInPlayerBlockPlacement.Directions.values()[(int)instance.direction];
                 Block block = world.getBlockAt(instance.x + dir.getXAdd(), instance.y+ dir.getYAdd(),
                     instance.z+ dir.getZAdd()).getBukkitBlock();
-                block.setTypeId(1);
+
+                // Get what player is holding
+                Slot slot = inv.getSlot(36 + selectedSlot);
+                if (slot != null && slot.itemId != 0) {
+                    block.setTypeIdAndData(slot.itemId, slot.itemDamage, true);
+                    inv.removeItem(new ItemStack(slot.itemId, slot.itemDamage, 1));
+                }
             } else {
                 // Right click AIR
             }
@@ -119,12 +140,20 @@ public class ConnectedClient extends Client {
                 if (block.getTypeId() != 0) {
                     if (gamemode != 1) {
                         // Player isn't in creative mode - give them the block!
-                        world.spawnFloatingItem(instance.x + 0.5, instance.y + 0.5, instance.z + 0.5, block.getTypeId(), block.getData());
+                        Material mat = Material.getMaterial(block.getTypeId());
+                        // Make sure its breakable
+                        if (mat == Material.GRASS) {
+                            mat = Material.DIRT;
+                        }
+                        world.spawnFloatingItem(instance.x + 0.5, instance.y + 0.5, instance.z + 0.5, mat.getId(), block.getData());
                     }
                     block.setTypeId(0);//double x, double y, double z, int id, byte data
                 }
             }
 
+        } else if (packet instanceof PacketInHeldItemChange) {
+            PacketInHeldItemChange instance = (PacketInHeldItemChange) packet;
+            selectedSlot = instance.slot;
         }
 
         // Update the cache
@@ -133,6 +162,7 @@ public class ConnectedClient extends Client {
         cache.z = z;
         cache.yaw = yaw;
         cache.pitch = pitch;
+        cache.inventory = inv.getArray();
     }
 
     public long timeOfDay = 6000;
@@ -184,14 +214,8 @@ public class ConnectedClient extends Client {
     @Override
     public boolean pickUpItem(FloatingItem item) {
         // Send inventory change to player
-        PacketOutSetSlot slot = new PacketOutSetSlot();
-        slot.slot = 36;
-        slot.slotData = new Slot((short)item.getId(), (byte)1, (short)item.getData());
-        slot.windowId = 0; // Inventory
+        ItemStack newItem = new ItemStack(item.getId(), item.getData(), item.count);
 
-        writePacket(slot);
-
-        // Destroy item
-        return true;
+        return inv.addItem(newItem) != null;
     }
 }

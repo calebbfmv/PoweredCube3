@@ -94,6 +94,24 @@ public class Block implements Serializable {
         setData(data, true);
     }
 
+    public void breakNaturally() {
+        // Make sure there's nothing above us, that falls
+        Block b = world.getBlockAt(x, y + 1, z);
+        if (b != null && b.getTypeId() != 0 && b.hasGravity()) {
+            b.breakNaturally();
+        }
+        setTypeId(0);
+        setData((byte)0);
+    }
+
+    public boolean hasGravity() {
+        Material mat = Material.getMaterial(id);
+        if (mat == Material.LONG_GRASS) {
+            return true;
+        }
+        return mat.hasGravity();
+    }
+
     public void update() {
         PacketOutBlockChange blockChange = new PacketOutBlockChange();
         blockChange.x = x;

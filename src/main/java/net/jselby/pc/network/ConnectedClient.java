@@ -67,6 +67,7 @@ public class ConnectedClient extends Client {
                 // Give starting goods!
                 inv.addItem(new ItemStack(Material.DIAMOND_PICKAXE.getId(), (byte)0, 1));
                 inv.addItem(new ItemStack(Material.DIAMOND_SPADE.getId(), (byte)0, 1));
+                inv.addItem(new ItemStack(Material.DIAMOND_AXE.getId(), (byte)0, 1));
             }
         }
 
@@ -109,7 +110,10 @@ public class ConnectedClient extends Client {
                     sendMessage("Unknown command. Type \"help\" for help.");
                 }
             } else {
-                sendMessage("<" + name + "> " + instance.message);
+                PacketOutChatMessage msg = new PacketOutChatMessage();
+                msg.message = ChatMessage.convertToJson("<" + name + "> " + instance.message);
+                PoweredCube.getInstance().distributePacket(
+                       msg);
             }
 
         } else if (packet instanceof PacketInClientSettings) {
@@ -147,7 +151,7 @@ public class ConnectedClient extends Client {
                         }
                         world.spawnFloatingItem(instance.x + 0.5, instance.y + 0.5, instance.z + 0.5, mat.getId(), block.getData());
                     }
-                    block.setTypeId(0);//double x, double y, double z, int id, byte data
+                    block.breakNaturally();
                 }
             }
 

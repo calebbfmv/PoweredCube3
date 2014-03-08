@@ -43,6 +43,9 @@ public class EntityManager implements Serializable {
                     }
                 }
             }
+            for (Entity entity : entities.toArray(new Entity[entities.size()])) {
+                entity.tick();
+            }
         }
     }
 

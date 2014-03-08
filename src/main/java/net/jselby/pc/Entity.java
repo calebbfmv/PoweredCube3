@@ -54,4 +54,9 @@ public abstract class Entity implements Serializable {
      * @param c The client to add
      */
     public abstract void showToClient(Client c);
+
+    /**
+     * Ticks the entity
+     */
+    public abstract void tick();
 }

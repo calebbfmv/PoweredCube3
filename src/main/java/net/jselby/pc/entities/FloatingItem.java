@@ -24,6 +24,7 @@ import net.jselby.pc.network.Client;
 import net.jselby.pc.network.Slot;
 import net.jselby.pc.network.packets.mcplay.PacketOutCollectItem;
 import net.jselby.pc.network.packets.mcplay.PacketOutSpawnObject;
+import net.jselby.pc.world.Block;
 import net.jselby.pc.world.World;
 
 import java.io.IOException;
@@ -86,5 +87,16 @@ public class FloatingItem extends Entity {
         packet.speedY = this.ySpeed;
         packet.speedZ = this.zSpeed;
         c.writePacket(packet);
+    }
+
+    @Override
+    public void tick() {
+        // Keep falling until on solid
+        Block b = world.getBlockAt((int)Math.floor(x), (int)(y - 1), (int)Math.floor(z));
+        if (b != null && b.getTypeId() != 0) {
+            // Don't fall
+        } else {
+            y -= 0.5;
+        }
     }
 }

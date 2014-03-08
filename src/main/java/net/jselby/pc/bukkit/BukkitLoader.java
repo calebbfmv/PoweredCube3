@@ -16,8 +16,10 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package net.jselby.pc;
+package net.jselby.pc.bukkit;
 
+import net.jselby.pc.JsonParser;
+import net.jselby.pc.PoweredCube;
 import net.jselby.pc.bukkit.BukkitPluginManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Server;

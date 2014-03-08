@@ -18,14 +18,12 @@
 
 package net.jselby.pc.network.packets.mcplay;
 
-import net.jselby.pc.Block;
-import net.jselby.pc.Chunk;
+import net.jselby.pc.world.Block;
+import net.jselby.pc.world.Chunk;
 import net.jselby.pc.PoweredCube;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.BitSet;
-import java.util.Random;
 import java.util.zip.Deflater;
 
 /**

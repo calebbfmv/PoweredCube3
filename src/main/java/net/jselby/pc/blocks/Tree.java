@@ -18,8 +18,8 @@
 
 package net.jselby.pc.blocks;
 
-import net.jselby.pc.Block;
-import net.jselby.pc.Chunk;
+import net.jselby.pc.world.Block;
+import net.jselby.pc.world.Chunk;
 
 import java.util.Random;
 

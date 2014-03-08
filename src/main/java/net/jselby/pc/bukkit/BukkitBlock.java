@@ -18,7 +18,7 @@
 
 package net.jselby.pc.bukkit;
 
-import net.jselby.pc.Block;
+import net.jselby.pc.world.Block;
 import org.apache.commons.lang.NotImplementedException;
 import org.bukkit.Chunk;
 import org.bukkit.Location;

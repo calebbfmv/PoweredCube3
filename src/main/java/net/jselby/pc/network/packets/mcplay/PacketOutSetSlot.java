@@ -16,33 +16,37 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package net.jselby.pc;
+package net.jselby.pc.network.packets.mcplay;
 
-import org.json.simple.JSONObject;
+import net.jselby.pc.network.*;
+
+import java.io.IOException;
 
 /**
- * Represents a SimpleJSON chat message, which can be sent via the
- * PacketOutChatMessage packet
+ * Created by James on 3/8/14.
  */
-public class ChatMessage {
-    public JSONObject json;
+public class PacketOutSetSlot extends Packet {
+    public byte windowId;
+    public short slot;
+    public Slot slotData;
 
-    /**
-     * Creates a ChatMessage from a already existing JSONObject.
-     * @param json The chat messages contents
-     */
-    public ChatMessage(JSONObject json) {
-        this.json = json;
+    @Override
+    public void write(Client cl, StandardOutput out) throws IOException {
+        out.writeByte(windowId);
+        out.writeShort(slot);
+        slotData.write(out);
     }
 
-    /**
-     * Converts a string to a basic ChatMessage
-     * @param message The String message
-     * @return A Chat message
-     */
-    public static ChatMessage convertToJson(String message) {
-        JSONObject obj = new JSONObject();
-        obj.put("text", message);
-        return new ChatMessage(obj);
+    @Override
+    public void read(Client cl, StandardInput in) throws IOException {}
+
+    @Override
+    public int getId() {
+        return 0x2F;
+    }
+
+    @Override
+    public PacketDefinitions.State getState() {
+        return PacketDefinitions.State.PLAY;
     }
 }

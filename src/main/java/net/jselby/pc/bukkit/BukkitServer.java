@@ -82,7 +82,7 @@ public class BukkitServer implements Server {
 
     @Override
     public int getViewDistance() {
-        return net.jselby.pc.World.INITIAL_SIZE;
+        return net.jselby.pc.world.World.INITIAL_SIZE;
     }
 
     @Override
@@ -206,7 +206,7 @@ public class BukkitServer implements Server {
     @Override
     public List<World> getWorlds() {
         ArrayList<World> worlds = new ArrayList<World>();
-        for (net.jselby.pc.World selectWorld : PoweredCube.getInstance().getWorlds().toArray(new net.jselby.pc.World[]{})) {
+        for (net.jselby.pc.world.World selectWorld : PoweredCube.getInstance().getWorlds().toArray(new net.jselby.pc.world.World[]{})) {
             worlds.add(selectWorld.getBukkitWorld());
         }
         return worlds;

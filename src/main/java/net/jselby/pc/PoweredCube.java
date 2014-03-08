@@ -18,6 +18,7 @@
 
 package net.jselby.pc;
 
+import net.jselby.pc.bukkit.BukkitLoader;
 import net.jselby.pc.bukkit.BukkitPlayer;
 import net.jselby.pc.bukkit.BukkitPluginManager;
 import net.jselby.pc.bukkit.BukkitServer;
@@ -25,6 +26,7 @@ import net.jselby.pc.network.Client;
 import net.jselby.pc.network.NetworkServer;
 import net.jselby.pc.network.Packet;
 import net.jselby.pc.network.PacketDefinitions;
+import net.jselby.pc.world.World;
 import org.bukkit.Server;
 import org.bukkit.entity.Player;
 
@@ -84,7 +86,12 @@ public class PoweredCube {
         worlds = new ArrayList<World>();
 
         if (PoweredCubeWorldLoader.worldExists("world")) {
-            worlds.add(PoweredCubeWorldLoader.loadWorld("world"));
+            World w = PoweredCubeWorldLoader.loadWorld("world");
+            if (w == null) {
+                System.err.println("World could not be loaded - check file!");
+                System.exit(0);
+            }
+            worlds.add(w);
         } else {
             World w = new World("world");
             worlds.add(w);
@@ -135,12 +142,12 @@ public class PoweredCube {
     }
 
     public void tick() {
-        for (Client c : clients.toArray(new Client[clients.size()])) {
-            try {
-                c.tick();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+        for (Client c : clients) {
+            c.tick();
+        }
+
+        for (World w : worlds) {
+            w.tick();
         }
     }
 
@@ -196,11 +203,7 @@ public class PoweredCube {
 
     public void distributePacket(Packet packet) {
         for (Client p : clients.toArray(new Client[clients.size()])) {
-            try {
-                p.writePacket(packet);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            p.writePacket(packet);
         }
     }
 

@@ -18,7 +18,7 @@
 
 package net.jselby.pc.bukkit;
 
-import net.jselby.pc.Chunk;
+import net.jselby.pc.world.Chunk;
 import org.bukkit.ChunkSnapshot;
 import org.bukkit.World;
 import org.bukkit.block.Block;

@@ -53,8 +53,9 @@ public class Logger extends java.util.logging.Logger {
 		Calendar cal = Calendar.getInstance();
 		SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
 
+        String caller = Thread.currentThread().getStackTrace()[5].getClassName();
 		output.println("[" + sdf.format(cal.getTime()) + " "
-				+ type.toUpperCase() + "]: " + message);
+				+ type.toUpperCase() + "] " + caller + ": " + message);
 	}
 
 	OutputStream getStream() {

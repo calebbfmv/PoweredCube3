@@ -21,11 +21,10 @@ package net.jselby.pc.network;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelHandlerContext;
-import javassist.bytecode.ByteArray;
-import net.jselby.pc.Chunk;
-import net.jselby.pc.PlayerCache;
+import net.jselby.pc.entities.FloatingItem;
+import net.jselby.pc.world.Chunk;
+import net.jselby.pc.world.PlayerCache;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -57,34 +56,41 @@ public abstract class Client {
         this.ctx = ctx;
     }
 
-    public abstract void onPacketReceive(Packet packet) throws IOException;
+    public abstract void onPacketReceive(Packet packet);
 
-    public abstract void tick() throws IOException;
+    public abstract void tick();
 
-    public ChannelFuture writePacket(Packet packet) throws IOException {
-        // Write the packet to a byte[] array
-        ByteArrayOutputStream in = new ByteArrayOutputStream();
-        StandardOutput out = new StandardOutput(new DataOutputStream(in));
-        out.startPacket(packet);
-        packet.write(this, out);
+    public ChannelFuture writePacket(Packet packet) {
+        try {
+            // Write the packet to a byte[] array
+            ByteArrayOutputStream in = new ByteArrayOutputStream();
+            StandardOutput out = new StandardOutput(new DataOutputStream(in));
+            out.startPacket(packet);
+            packet.write(this, out);
 
-        byte[] packetContents = in.toByteArray();
+            byte[] packetContents = in.toByteArray();
 
-        // Add the length header
-        ByteArrayOutputStream in1 = new ByteArrayOutputStream();
-        out = new StandardOutput(new DataOutputStream(in1));
-        out.writeVarInt(packetContents.length);
-        out.writeBytes(packetContents);
-        packetContents = in1.toByteArray();
+            // Add the length header
+            ByteArrayOutputStream in1 = new ByteArrayOutputStream();
+            out = new StandardOutput(new DataOutputStream(in1));
+            out.writeVarInt(packetContents.length);
+            out.writeBytes(packetContents);
+            packetContents = in1.toByteArray();
 
-        // Convert it to a Netty stream
-        ByteBuf buffer = ctx.alloc().buffer(packetContents.length);
-        buffer.writeBytes(packetContents);
+            // Convert it to a Netty stream
+            ByteBuf buffer = ctx.alloc().buffer(packetContents.length);
+            buffer.writeBytes(packetContents);
 
-        return ctx.writeAndFlush(buffer);
+            return ctx.writeAndFlush(buffer);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
-    public abstract void sendMessage(String s) throws IOException;
+    public abstract void sendMessage(String s);
 
-    public abstract void onDisconnect() throws IOException;
+    public abstract void onDisconnect();
+
+    public abstract boolean pickUpItem(FloatingItem item);
 }

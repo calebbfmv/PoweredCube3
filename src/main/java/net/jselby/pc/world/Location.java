@@ -16,33 +16,25 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package net.jselby.pc;
-
-import org.json.simple.JSONObject;
+package net.jselby.pc.world;
 
 /**
- * Represents a SimpleJSON chat message, which can be sent via the
- * PacketOutChatMessage packet
+ * Created by James on 3/7/14.
  */
-public class ChatMessage {
-    public JSONObject json;
+public class Location {
+    public double x;
+    public double y;
+    public double z;
+    public float yaw;
+    public float pitch;
 
-    /**
-     * Creates a ChatMessage from a already existing JSONObject.
-     * @param json The chat messages contents
-     */
-    public ChatMessage(JSONObject json) {
-        this.json = json;
+    public Location(double x, double y, double z) {
+        this.x = x;
+        this.y = y;
+        this.z = z;
     }
 
-    /**
-     * Converts a string to a basic ChatMessage
-     * @param message The String message
-     * @return A Chat message
-     */
-    public static ChatMessage convertToJson(String message) {
-        JSONObject obj = new JSONObject();
-        obj.put("text", message);
-        return new ChatMessage(obj);
+    public double distance(Location other) {
+        return Math.sqrt(Math.pow(other.x - x, 2) + Math.pow(other.y - y, 2) + Math.pow(other.z - z, 2));
     }
 }

@@ -650,11 +650,7 @@ public class BukkitPlayer implements Player {
 
     @Override
     public void sendMessage(String s) {
-        try {
-            client.sendMessage(s);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        client.sendMessage(s);
     }
 
     @Override

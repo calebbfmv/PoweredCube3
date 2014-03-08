@@ -18,7 +18,7 @@
 
 package net.jselby.pc.bukkit;
 
-import net.jselby.pc.World;
+import net.jselby.pc.world.World;
 import org.bukkit.*;
 import org.bukkit.block.Biome;
 import org.bukkit.block.Block;
@@ -53,7 +53,7 @@ public class BukkitWorld implements org.bukkit.World, Serializable {
         if (world == null) {
             return null;
         }
-        net.jselby.pc.Block block = world.getBlockAt(x, y, z);
+        net.jselby.pc.world.Block block = world.getBlockAt(x, y, z);
         if (block == null) {
             System.out.println("Invalid block!");
         }

@@ -48,19 +48,12 @@ public class PacketOutSpawnObject extends Packet {
     @Override
     public void write(Client cl, StandardOutput out) throws IOException {
         out.writeVarInt(entityId);
-        System.out.println(entityId);
         out.writeByte((byte)type.getId());
-        System.out.println((byte)type.getId());
         out.writeInt((int) (x * 32));
-        System.out.println((int) (x * 32));
         out.writeInt((int) (y * 32));
-        System.out.println((int) (y * 32));
         out.writeInt((int) (z * 32));
-        System.out.println((int) (z * 32));
         out.writeByte(pitch);
-        System.out.println(pitch);
         out.writeByte(yaw);
-        System.out.println(yaw);
         byte[] data = new byte[]{};
 
         // Data:
@@ -69,7 +62,6 @@ public class PacketOutSpawnObject extends Packet {
             ByteArrayOutputStream in = new ByteArrayOutputStream();
             DataOutputStream outWrapper = new DataOutputStream(in);
             StandardOutput outArray = new StandardOutput(outWrapper);
-            slot.write(outArray);
 
             // write speed
             outArray.writeShort(speedX);
@@ -82,10 +74,8 @@ public class PacketOutSpawnObject extends Packet {
         }
 
         out.writeInt(data.length);
-        System.out.println(data.length);
         if (data.length > 0) {
             out.writeBytes(data);
-            System.out.println(new String(data));
         }
     }
 

@@ -16,17 +16,37 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package net.jselby.pc;
+package net.jselby.pc.network.packets.mcplay;
 
-import java.io.Serializable;
+import net.jselby.pc.network.*;
+
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
 
 /**
- * Created by James on 2/16/14.
+ * Created by James on 3/8/14.
  */
-public class PlayerCache implements Serializable {
-    public double x;
-    public double y;
-    public double z;
-    public float yaw;
-    public float pitch;
+public class PacketOutDestroyEntities extends Packet {
+    public int id;
+
+    @Override
+    public void write(Client cl, StandardOutput out) throws IOException {
+        out.writeByte(1);
+        out.writeInt(id);
+    }
+
+    @Override
+    public void read(Client cl, StandardInput in) throws IOException {}
+
+    @Override
+    public int getId() {
+        return 0x13;
+    }
+
+    @Override
+    public PacketDefinitions.State getState() {
+        return PacketDefinitions.State.PLAY;
+    }
 }

@@ -16,14 +16,14 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package net.jselby.pc;
+package net.jselby.pc.world;
 
+import net.jselby.pc.*;
 import net.jselby.pc.blocks.Material;
 import net.jselby.pc.bukkit.BukkitWorld;
-import net.jselby.pc.network.Slot;
-import net.jselby.pc.network.packets.mcplay.PacketOutChunkData;
-import net.jselby.pc.network.packets.mcplay.PacketOutSpawnObject;
-import org.bukkit.util.noise.SimplexOctaveGenerator;
+import net.jselby.pc.entities.FloatingItem;
+import net.jselby.pc.network.Client;
+import net.jselby.pc.network.packets.mcplay.PacketOutDestroyEntities;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -41,6 +41,7 @@ public class World implements Serializable {
     public HashMap<String, PlayerCache> caches = new HashMap<String, PlayerCache>();
     private BukkitWorld thisAsBukkit;
     private Seed seed;
+    public EntityManager m = new EntityManager();
 
     public World(String name) {
         seed = new Seed(new Random().nextLong());
@@ -94,7 +95,6 @@ public class World implements Serializable {
         int chunkZ = z >> 4;
         int absChunkX = x - (chunkX * 16);
         int absChunkZ = z - (chunkZ * 16);
-        //System.out.println(chunkX + ":" + chunkZ);
 
         Chunk c = getChunkAt(chunkX, chunkZ);
         if (c == null) {
@@ -104,13 +104,11 @@ public class World implements Serializable {
         if (b == null) {
             // int id, World world, Chunk chunk, byte data, int x, int y, int z
             // Empty block - fill it out
-            //System.out.println("Null block, filling it in: " + absChunkX + ":" + y + ":" + absChunkZ);
-            // int id, World world, Chunk chunk, byte data, int x, int y, int z
 
             c.blocks[absChunkX][y][absChunkZ] = new Block(Material.AIR, this, c, (byte) 0, x, y, z);
             b = c.blocks[absChunkX][y][absChunkZ];
         }
-       // System.out.println(b.x + "?" + x + ":" + b.y + "?" + y + ":" + b.z + "?" + z);
+
         return b;
     }
 
@@ -138,19 +136,33 @@ public class World implements Serializable {
         return c;
     }
 
-    public void spawnFloatingItem(int x, int y, int z, int typeId, byte data) {
-        PacketOutSpawnObject packet = new PacketOutSpawnObject();
-        packet.x = x;
-        packet.y = y;
-        packet.z = z;
-        packet.entityId = PoweredCube.getInstance().getNextEntityID();
-        packet.slot = new Slot((short)typeId, (byte)1, (short)data);
-        packet.pitch = 0;
-        packet.yaw = 0;
-        packet.type = PacketOutSpawnObject.ObjectType.ITEM_STACK;
-        packet.speedX = 0;
-        packet.speedY = 0;
-        packet.speedZ = 0;
-        PoweredCube.getInstance().distributePacket(packet);
+    public void spawnFloatingItem(double x, double y, double z, int typeId, byte data) {
+        // Create entity
+        FloatingItem i = new FloatingItem(PoweredCube.getInstance().getNextEntityID(), this, x, y, z, typeId, data);
+        m.addEntity(i);
+
+        // Show entity
+        for (Client c : PoweredCube.getInstance().clients) {
+            i.showToClient(c);
+        }
+    }
+
+    public void removeEntity(Entity ent) {
+
+        if (m.containsEntity(ent)) {
+            System.out.println("Removing entity of id: " + ent.id);
+            m.removeEntity(ent);
+
+            PacketOutDestroyEntities destroyEntities = new PacketOutDestroyEntities();
+            destroyEntities.id = (ent.id);
+
+            PoweredCube.getInstance().distributePacket(destroyEntities);
+        }
+
+    }
+
+    public void tick() {
+        // Tick the entities
+        m.tick();
     }
 }

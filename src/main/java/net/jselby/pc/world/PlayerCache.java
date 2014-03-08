@@ -16,33 +16,17 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package net.jselby.pc;
+package net.jselby.pc.world;
 
-import org.json.simple.JSONObject;
+import java.io.Serializable;
 
 /**
- * Represents a SimpleJSON chat message, which can be sent via the
- * PacketOutChatMessage packet
+ * Created by James on 2/16/14.
  */
-public class ChatMessage {
-    public JSONObject json;
-
-    /**
-     * Creates a ChatMessage from a already existing JSONObject.
-     * @param json The chat messages contents
-     */
-    public ChatMessage(JSONObject json) {
-        this.json = json;
-    }
-
-    /**
-     * Converts a string to a basic ChatMessage
-     * @param message The String message
-     * @return A Chat message
-     */
-    public static ChatMessage convertToJson(String message) {
-        JSONObject obj = new JSONObject();
-        obj.put("text", message);
-        return new ChatMessage(obj);
-    }
+public class PlayerCache implements Serializable {
+    public double x;
+    public double y;
+    public double z;
+    public float yaw;
+    public float pitch;
 }

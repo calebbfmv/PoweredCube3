@@ -18,31 +18,38 @@
 
 package net.jselby.pc;
 
-import org.json.simple.JSONObject;
+import net.jselby.pc.network.Client;
+import net.jselby.pc.world.World;
 
 /**
- * Represents a SimpleJSON chat message, which can be sent via the
- * PacketOutChatMessage packet
+ * A object representing a in-game entity.
+ *
+ * @author j_selby
  */
-public class ChatMessage {
-    public JSONObject json;
+public abstract class Entity {
+    public int id;
+
+    public double x;
+    public double y;
+    public double z;
+
+    public short xSpeed;
+    public short ySpeed;
+    public short zSpeed;
+
+    public float pitch;
+    public float yaw;
+    public World world;
 
     /**
-     * Creates a ChatMessage from a already existing JSONObject.
-     * @param json The chat messages contents
+     * When this entity is reached by a player (distance defined in the EntityManager class)
+     * @param c The client that approached
      */
-    public ChatMessage(JSONObject json) {
-        this.json = json;
-    }
+    public abstract void onApproach(Client c);
 
     /**
-     * Converts a string to a basic ChatMessage
-     * @param message The String message
-     * @return A Chat message
+     * Sends a packet representing this entity to the supplied client.
+     * @param c The client to add
      */
-    public static ChatMessage convertToJson(String message) {
-        JSONObject obj = new JSONObject();
-        obj.put("text", message);
-        return new ChatMessage(obj);
-    }
+    public abstract void showToClient(Client c);
 }

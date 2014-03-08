@@ -114,7 +114,7 @@ public class PoweredCube {
             public void run() {
                 System.out.println("Saving world...");
                 for (World world : worlds) {
-                    //PoweredCubeWorldLoader.saveWorld(world);
+                    PoweredCubeWorldLoader.saveWorld(world);
                 }
             }
         });

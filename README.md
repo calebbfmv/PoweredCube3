@@ -4,7 +4,7 @@ PoweredCube3
 Bukkit with a twist: No Notch code to be seen!
 Supporting:
 - MC Protocol 1.7.4
-- Bukkit version R1.7.2-R0.2
+- Bukkit version R1.7.2-R0.3
 
 This is a complete recode of the Minecraft server (a.k.a no notch code.)
 We are supporting the Bukkit API as well, so all your old Bukkit plugins should work fine,

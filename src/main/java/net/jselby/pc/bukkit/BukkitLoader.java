@@ -25,8 +25,10 @@ import org.bukkit.Bukkit;
 import org.bukkit.Server;
 import org.bukkit.plugin.InvalidDescriptionException;
 import org.bukkit.plugin.InvalidPluginException;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.plugin.java.JavaPluginLoader;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
@@ -56,8 +58,8 @@ public class BukkitLoader {
         Method method = URLClassLoader.class.getDeclaredMethod("addURL",
                 new Class[] { URL.class });
         method.setAccessible(true);
-        method.invoke(ClassLoader.getSystemClassLoader(), new Object[] { file
-                .toURI().toURL() });
+        method.invoke(ClassLoader.getSystemClassLoader(), new Object[]{file
+                .toURI().toURL()});
     }
 
     @SuppressWarnings("unchecked")
@@ -83,11 +85,10 @@ public class BukkitLoader {
             jarFile.close();
 
             try {
-                addToClasspath(file);
-                Class<JavaPlugin> pluginClass = (Class<JavaPlugin>) Class
-                        .forName(bukkitClass);
-                JavaPlugin plugin = pluginClass.newInstance();
-                pluginClass = (Class<JavaPlugin>) plugin.getClass()
+                //addToClasspath(file);
+                JavaPluginLoader pluginLoader = new JavaPluginLoader(PoweredCube.getInstance().getBukkitServer());
+                Plugin plugin = pluginLoader.loadPlugin(file);
+                Class<JavaPlugin> pluginClass = (Class<JavaPlugin>) plugin.getClass()
                         .getSuperclass();
                 for (Method method : pluginClass.getDeclaredMethods()) {
                     if (method.getName().equalsIgnoreCase("init")

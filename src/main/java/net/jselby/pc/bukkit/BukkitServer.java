@@ -403,6 +403,11 @@ public class BukkitServer implements Server {
     }
 
     @Override
+    public BanList getBanList(BanList.Type type) {
+        return null;
+    }
+
+    @Override
     public Set<OfflinePlayer> getOperators() {
         return null; // TODO: Add configuration option for this
     }
@@ -519,6 +524,21 @@ public class BukkitServer implements Server {
 
     @Override
     public CachedServerIcon loadServerIcon(BufferedImage bufferedImage) throws Exception {
+        return null;
+    }
+
+    @Override
+    public void setIdleTimeout(int i) {
+
+    }
+
+    @Override
+    public int getIdleTimeout() {
+        return 0;
+    }
+
+    @Override
+    public UnsafeValues getUnsafe() {
         return null;
     }
 

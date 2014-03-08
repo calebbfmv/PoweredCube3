@@ -47,72 +47,9 @@ import java.util.zip.ZipException;
  * Created by James on 2/1/14.
  */
 public class BukkitLoader {
-    public static final String PREFIX = "BC";
-
     public BukkitLoader() {
-        // Verify we are compatable with this version
-        boolean isSilenced = false;
-        try {
-            JSONObject obj = JsonParser
-                    .readJsonFromUrl("http://dl.bukkit.org/api/1.0/downloads/projects/"
-                            + "craftbukkit/view/latest/?_accept=application%2Fjson");
-            String ver = (String) obj.get("version");
-            if (!PoweredCube.BUKKIT_VERSION.split("-")[0].equalsIgnoreCase(ver
-                    .split("-")[0])) {
-                System.out.println("[" + PREFIX
-                        + "]: [WARNING] Bukkit version \"" + ver
-                        + "\" is not compatable with");
-                System.out.println("[" + PREFIX
-                        + "]: [WARNING] this version"
-                        + " of PoweredCube (we are built for \""
-                        + PoweredCube.BUKKIT_VERSION + "\")!");
-                System.out.println("[" + PREFIX
-                        + "]: [WARNING] Be warned: errors may occur!");
-                isSilenced = true;
-            }
-        } catch (Exception e1) {
-            System.err.println("[" + PREFIX
-                    + "]: Error while checking Bukkit version:");
-            e1.printStackTrace();
-        }
-        File jar = new File("bukkit.jar");
-        if (!jar.exists()) {
-            System.out.println("[" + PREFIX + "]: "
-                    + "Downloading Bukkit version "
-                    + PoweredCube.BUKKIT_DL_VERSION + "...");
-
-            try {
-                URL bukkit = new URL(
-                        "http://dl.bukkit.org/downloads/bukkit/get/"
-                                + PoweredCube.BUKKIT_DL_VERSION
-                                + "/bukkit-dev.jar");
-                ReadableByteChannel rbc = Channels.newChannel(bukkit
-                        .openStream());
-                FileOutputStream fos = new FileOutputStream("bukkit.jar");
-                fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
-                fos.close();
-            } catch (Exception e) {
-                e.printStackTrace();
-                return;
-            }
-
-        }
-
-        try {
-            addToClasspath(jar);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return;
-        }
-
-        Bukkit.setServer((Server) PoweredCube.getInstance().getBukkitServer());
-        // Lets see if we can access a Bukkit method
-        if (Bukkit.getBukkitVersion() != PoweredCube.BUKKIT_VERSION
-                && !isSilenced) {
-            throw new IllegalStateException(
-                    "Downloaded Bukkit version isn't the "
-                            + "version PoweredCube requested!");
-        }
+        // We no longer need to download Bukkit
+        Bukkit.setServer(PoweredCube.getInstance().getBukkitServer());
     }
 
     public static void addToClasspath(File file) throws Exception {

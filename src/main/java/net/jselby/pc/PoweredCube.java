@@ -30,7 +30,6 @@ import net.jselby.pc.world.World;
 import org.bukkit.Server;
 import org.bukkit.entity.Player;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
 /**
@@ -38,7 +37,6 @@ import java.util.ArrayList;
  */
 public class PoweredCube {
     public final static String BUKKIT_VERSION = "1.7.2-R0.2";
-    public final static String BUKKIT_DL_VERSION = "latest";
     public final static String MC_VERSION = "1.7.4";
 
     private static PoweredCube instance;

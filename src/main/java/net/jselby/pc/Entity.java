@@ -21,12 +21,14 @@ package net.jselby.pc;
 import net.jselby.pc.network.Client;
 import net.jselby.pc.world.World;
 
+import java.io.Serializable;
+
 /**
  * A object representing a in-game entity.
  *
  * @author j_selby
  */
-public abstract class Entity {
+public abstract class Entity implements Serializable {
     public int id;
 
     public double x;

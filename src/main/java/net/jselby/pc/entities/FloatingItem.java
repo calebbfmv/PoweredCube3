@@ -26,6 +26,7 @@ import net.jselby.pc.network.packets.mcplay.PacketOutSpawnObject;
 import net.jselby.pc.world.World;
 
 import java.io.IOException;
+import java.io.Serializable;
 
 /**
  * Represents a floating itemstack. Simply stores a block id, and a data argument, and has the ability to

@@ -15,6 +15,7 @@ Currently working on:
   - Need to add protocol support
 
 TODO:
+- Ability to see other players
 - NBT support
 - Better world generation
 - Full implementation of protocol
@@ -27,6 +28,6 @@ TODO:
 - Implementing mobs
 
 We need your help!
-We cannot do this on our own - every bitof help counts!
+We cannot do this on our own - every bit of help counts!
 
 This was coded using Intellj IDEA, so you will need that to contribute.

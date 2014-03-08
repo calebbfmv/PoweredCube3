@@ -24,6 +24,7 @@ import net.jselby.pc.bukkit.BukkitWorld;
 import net.jselby.pc.entities.FloatingItem;
 import net.jselby.pc.network.Client;
 import net.jselby.pc.network.packets.mcplay.PacketOutDestroyEntities;
+import org.bukkit.util.noise.SimplexNoiseGenerator;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -35,6 +36,7 @@ import java.util.Random;
  */
 public class World implements Serializable {
     public static final int INITIAL_SIZE = 1;
+    public static final int MAX_HEIGHT = 255;
 
     private String name;
     public ArrayList<Chunk> chunks = new ArrayList<Chunk>();
@@ -42,17 +44,56 @@ public class World implements Serializable {
     private BukkitWorld thisAsBukkit;
     private Seed seed;
     public EntityManager m = new EntityManager();
+    public Random random;
+
+    public double spawnX;
+    public double spawnY;
+    public double spawnZ;
 
     public World(String name) {
         seed = new Seed(new Random().nextLong());
+        this.random = new Random(seed.seed);
+
         this.name = name;
-        System.out.println("Generating world \"" + name + "\" with seed " + seed + "...");
-        for (int x = -INITIAL_SIZE; x <= INITIAL_SIZE; x++) {
-            for (int y = -INITIAL_SIZE; y <= INITIAL_SIZE; y++) {
-                chunks.add(new Chunk(this, x, y));
+        System.out.println("Generating world \"" + name + "\" with seed " + seed.seed + "...");
+
+        thisAsBukkit = new BukkitWorld(this);
+
+        // Find the spawn point
+        int searchX = 0;
+        int searchZ = 0;
+        while(true) {
+            Block b = getHighestBlockAt(searchX, searchZ);
+
+            if (b != null && b.getTypeId() != Material.WATER.getId()) {
+                // Safe place
+                // Clear out chunk cache, we will do it again ourselves
+                chunks.clear();
+                spawnX = ((double)searchX) + 0.5;
+                spawnY = b.y;
+                spawnZ = ((double)searchZ) + 0.5;
+
+                for (int x = -INITIAL_SIZE + searchX; x <= INITIAL_SIZE + searchX; x++) {
+                    for (int y = -INITIAL_SIZE + searchZ; y <= INITIAL_SIZE + searchZ; y++) {
+                        chunks.add(new Chunk(this, x, y));
+                    }
+                }
+                break;
+            }
+
+            searchX += 12;
+        }
+
+
+    }
+
+    private Block getHighestBlockAt(int x, int z) {
+        for (int y = MAX_HEIGHT; y > 0; y--) {
+            if (getBlockAt(x, y - 1, z).getTypeId() != 0) {
+                return getBlockAt(x, y - 1, z);
             }
         }
-        thisAsBukkit = new BukkitWorld(this);
+        return null;
     }
 
     public World(String name, ArrayList<Chunk> chunks) {
@@ -128,9 +169,9 @@ public class World implements Serializable {
         PlayerCache c = caches.get(name);
         if (c == null) {
             c = new PlayerCache();
-            c.x = 7;
-            c.z = 7;
-            c.y = getBukkitWorld().getHighestBlockYAt((int)c.x, (int)c.z);
+            c.x = spawnX;
+            c.z = spawnZ;
+            c.y = getBukkitWorld().getHighestBlockYAt((int)c.x, (int)c.z) + 1;
             caches.put(name, c);
         }
         return c;

@@ -25,18 +25,9 @@ import java.util.Random;
  * Created by James on 2/16/14.
  */
 public class Seed implements Serializable {
-    public int alt1;
-    public int alt2;
-    public int alt3;
-    public int alt4;
     public long seed;
 
     public Seed(long seed) {
         this.seed = seed;
-        Random r = new Random(seed);
-        alt1 = r.nextInt(20000);
-        alt2 = r.nextInt(20000);
-        alt3 = r.nextInt(20000);
-        alt4 = r.nextInt(20000);
     }
 }

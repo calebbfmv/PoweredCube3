@@ -21,6 +21,8 @@ package net.jselby.pc.world;
 import net.jselby.pc.blocks.Material;
 import net.jselby.pc.blocks.Tree;
 import net.jselby.pc.bukkit.BukkitChunk;
+import org.bukkit.util.noise.PerlinNoiseGenerator;
+import org.bukkit.util.noise.SimplexNoiseGenerator;
 
 import java.io.Serializable;
 import java.util.Random;
@@ -48,13 +50,20 @@ public class Chunk implements Serializable {
         int absChunkZ = chunkZ * 16;
 
         // Generate perlin noise
-        boolean cover = false;
-        Random r = new Random();
+        Random r = world.random;
         Seed noiseSeed = world.getSeed();
+
+        // Bukkit PerlinNoiseGenerator
+        PerlinNoiseGenerator generator = new PerlinNoiseGenerator(noiseSeed.seed);
+
         for (int x = 0; x < 16; x++) {
             for (int z = 0; z < 16; z++) {
-                double actualY = FastNoise.noise(((float) x + (chunkX * 16)) / 512f,
-                        ((float) z + (chunkZ * 16)) / 512f, 7);
+                double actualY = 70 + generator.noise(((float) x + (chunkX * 16)) / 512f,
+                        ((float) z + (chunkZ * 16)) / 512f, 7, (double) 1.5, 1.5);
+                        generator.noise(x, z, 7);
+
+                        //FastNoise.noise(((float) x + (chunkX * 16)) / 512f,
+                        //((float) z + (chunkZ * 16)) / 512f, 7);
                 if (actualY < 70) {
                     // Water
                     for (double y = 70; y >= actualY; y--) {

@@ -28,6 +28,7 @@ import java.io.*;
 public class PoweredCubeWorldLoader {
     public static World loadWorld(String world) {
         try {
+            System.out.println("Loading world \"" + world + "\" from file...");
             File file = new File(world + ".world");
             ObjectInputStream in = new ObjectInputStream(new FileInputStream(file));
             World chunks = (World) in.readObject();

@@ -260,18 +260,30 @@ public class BukkitPluginManager implements PluginManager {
         // Check for builtin commands
         if (name.equalsIgnoreCase("/give")) {
             int amount = 1;
-            if (args.length > 2) {
+            if (args.length > 1) {
                 try {
-                    amount = Integer.parseInt(args[2]);
+                    amount = Integer.parseInt(args[1]);
                 } catch (Exception e) {
                     sender.sendMessage("Invalid number at argument 2.");
                     return true;
                 }
             }
 
-            Material mat = Material.matchMaterial(args[1]);
+            // Make sure its a minecraft: material
+            String[] splitMaterial = name.split(":");
+            if (splitMaterial.length != 2) {
+                sender.sendMessage("Invalid item (Invalid argument).");
+                return true;
+            }
+
+            if (!splitMaterial[0].equalsIgnoreCase("minecraft")) {
+                sender.sendMessage("Invalid item (Couldn't be located).");
+                return true;
+            }
+
+            Material mat = Material.matchMaterial(splitMaterial[splitMaterial.length - 1]);
             if (mat == null) {
-                sender.sendMessage("Invalid item.");
+                sender.sendMessage("Invalid item (Couldn't be located).");
                 return true;
             }
 

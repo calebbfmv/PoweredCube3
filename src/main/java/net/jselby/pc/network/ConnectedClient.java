@@ -38,6 +38,9 @@ import java.io.IOException;
  * @author j_selby
  */
 public class ConnectedClient extends Client {
+    public static final int LOADED_CHUNKS = 12;
+    public static final int LOADED_BLOCKS = LOADED_CHUNKS * 16;
+
     public int tick = 0;
     public World world;
     public int gamemode = 0;
@@ -57,6 +60,8 @@ public class ConnectedClient extends Client {
 
     @Override
     public void onPacketReceive(Packet packet) {
+        //if (packet.getId() != 3 && packet.getId() != 0 && packet.getId() != 4 && packet.getId() != 5 && packet.getId() != 6)
+        //    System.out.println("Got packet: " + packet.getId());
         // Check for the player "cache"
         if (cache == null) {
             cache = world.getPlayerCache(name);
@@ -153,6 +158,12 @@ public class ConnectedClient extends Client {
                     }
                     block.breakNaturally();
                 }
+            } else if (instance.status == 0) {
+                // Instant breakable blocks (long grass only one?)
+                net.jselby.pc.world.Block block = world.getBlockAt(instance.x, instance.y, instance.z);
+                if (block.getTypeId() == Material.LONG_GRASS.getId()) {
+                    block.breakNaturally();
+                }
             }
 
         } else if (packet instanceof PacketInHeldItemChange) {
@@ -174,8 +185,8 @@ public class ConnectedClient extends Client {
     public void tick() {
         tick++;
         // Check that client is loaded area-wise
-        for (double tempX = x - 100; tempX < x + 100; tempX += 16) {
-            for (double tempZ = z - 100; tempZ < z + 100; tempZ += 16) {
+        for (double tempX = x - (LOADED_BLOCKS / 2); tempX < x + (LOADED_BLOCKS / 2); tempX += 16) {
+            for (double tempZ = z - (LOADED_BLOCKS / 2); tempZ < z + (LOADED_BLOCKS / 2); tempZ += 16) {
                 Chunk c = world.getBlockAt((int)tempX, 1, (int)tempZ).chunk;
                 if (!loadedChunks.contains(c)) {
                     loadedChunks.add(c);

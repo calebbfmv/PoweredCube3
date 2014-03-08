@@ -11,18 +11,20 @@ We are supporting the Bukkit API as well, so all your old Bukkit plugins should 
 as long as they don't use NMS.
 
 Currently working on:
-- Item breaking
-  - Currently causes client-side error, packet size > limit
+- Inventory management - movement, crafting, and so on
+  - Need to add protocol support
 
 TODO:
-- Proper entity support
 - NBT support
-- Inventory management
 - Better world generation
 - Full implementation of protocol
-- Survival mode implementation
+- Survival mode implementation (health, hunger)
 - Implementing full Bukkit API
+  - "Fill in the blanks"
+  - Commands
+  - Full event implementation
 - Adding actions to blocks
+- Implementing mobs
 
 We need your help!
 We cannot do this on our own - every bitof help counts!

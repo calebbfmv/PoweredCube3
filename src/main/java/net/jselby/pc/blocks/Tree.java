@@ -32,19 +32,11 @@ public class Tree {
         Random r = new Random(seed);
         int trunkAdd = r.nextInt(3);
         for (int buildY = y; buildY < y + 5 + trunkAdd; buildY++) {
-            chunk.blocks[x][buildY][z] =
-                    new Block(Material.LOG, chunk.getWorld(),
-                            chunk, (byte)2, x, buildY, z);
+            chunk.getWorld().getBlockAt(x, buildY, z).setTypeId(Material.LOG.getId(), false);
         }
 
         for (int buildX = x - 2; buildX <= x + 2; buildX++) {
-            if (buildX < 0) {
-                buildX = 0;
-            }
-            if (buildX > 15) {
-                buildX = 15;
-            }
-            for (int buildY = y + 5; buildY <= y + 3 + 3 + trunkAdd; buildY++) {
+            for (int buildY = y + 4; buildY <= y + 3 + 3 + trunkAdd; buildY++) {
                 if (buildY < 0) {
                     buildY = 0;
                 }
@@ -52,30 +44,14 @@ public class Tree {
                     buildY = 254;
                 }
                 for (int buildZ = z - 2; buildZ <= z + 2; buildZ++) {
-                    if (buildZ < 0) {
-                        buildZ = 0;
-                    }
-                    if (buildZ > 15) {
-                        buildZ = 15;
-                    }
-                    if (!(buildX == x - 2 || buildX == x + 2 || buildZ == z - 2 || buildZ == z + 2)) {
-                        if (chunk.blocks[buildX][buildY][buildZ] == null ||
-                                chunk.blocks[buildX][buildY][buildZ].getTypeId() == 0) {
-                            chunk.blocks[buildX][buildY][buildZ] =
-                                new Block(Material.LEAVES, chunk.getWorld(),
-                                        chunk, buildX, buildY, buildZ);
-                        }
-                    }
-                    if (buildZ == 15) {
-                        break;
+                    Block b = chunk.getWorld().getBlockAt(buildX, buildY, buildZ);
+                    if (b.getTypeId() == 0) {
+                        b.setTypeId(Material.LEAVES.getId(), false);
                     }
                 }
                 if (buildY == 254) {
                     break;
                 }
-            }
-            if (buildX == 15) {
-                break;
             }
         }
     }

@@ -58,9 +58,8 @@ public class Chunk implements Serializable {
 
         for (int x = 0; x < 16; x++) {
             for (int z = 0; z < 16; z++) {
-                double actualY = 70 + generator.noise(((float) x + (chunkX * 16)) / 512f,
-                        ((float) z + (chunkZ * 16)) / 512f, 7, (double) 1.5, 1.5);
-                        generator.noise(x, z, 7);
+                int actualY = (int)Math.floor(70 + generator.noise(((float) x + (chunkX * 16)) / 512f,
+                        ((float) z + (chunkZ * 16)) / 512f, 7, (double) 1.5, 1.5));
 
                         //FastNoise.noise(((float) x + (chunkX * 16)) / 512f,
                         //((float) z + (chunkZ * 16)) / 512f, 7);
@@ -72,9 +71,9 @@ public class Chunk implements Serializable {
                                         this, absChunkX + x, (int)y, absChunkZ + z);
                     }
                 } else {
-                    if (r.nextInt(200) == 1) {
+                    if (r.nextInt(500) == 1) {
                         // Generate Tree here
-                        Tree.generate(this, x, (int) actualY, z, r.nextLong());
+                        Tree.generate(this, absChunkX + x, (int) actualY, absChunkZ + z, r.nextLong());
                     } else if (r.nextInt(2) == 1) {
                         // Generate grass here
                         blocks[x][(int)actualY + 1][z] =
@@ -86,6 +85,10 @@ public class Chunk implements Serializable {
                                     this, absChunkX + x, (int)actualY, absChunkZ + z);
                 }
 
+                if (actualY < 70) {
+                    // Raise underwater height
+                    actualY ++;
+                }
                 for (double y = actualY - 1; y > actualY - 5; y--) {
                     blocks[x][(int)y][z] =
                             new Block(Material.DIRT, world,

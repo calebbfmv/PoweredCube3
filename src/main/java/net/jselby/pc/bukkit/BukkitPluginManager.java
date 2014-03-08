@@ -270,7 +270,7 @@ public class BukkitPluginManager implements PluginManager {
             }
 
             // Make sure its a minecraft: material
-            String[] splitMaterial = name.split(":");
+            String[] splitMaterial = args[0].split(":");
             if (splitMaterial.length != 2) {
                 sender.sendMessage("Invalid item (Invalid argument).");
                 return true;

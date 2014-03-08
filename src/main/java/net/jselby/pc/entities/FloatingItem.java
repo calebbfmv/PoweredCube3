@@ -20,9 +20,9 @@ package net.jselby.pc.entities;
 
 import net.jselby.pc.Entity;
 import net.jselby.pc.PoweredCube;
-import net.jselby.pc.network.Client;
-import net.jselby.pc.network.Slot;
+import net.jselby.pc.network.*;
 import net.jselby.pc.network.packets.mcplay.PacketOutCollectItem;
+import net.jselby.pc.network.packets.mcplay.PacketOutEntityMetadata;
 import net.jselby.pc.network.packets.mcplay.PacketOutSpawnObject;
 import net.jselby.pc.world.Block;
 import net.jselby.pc.world.World;
@@ -87,6 +87,15 @@ public class FloatingItem extends Entity {
         packet.speedY = this.ySpeed;
         packet.speedZ = this.zSpeed;
         c.writePacket(packet);
+
+        // Entity metadata
+        PacketOutEntityMetadata metadata = new PacketOutEntityMetadata();
+        metadata.id = id;
+        Slot slot = new Slot(0, blockId, count, data);
+        metadata.meta.entries.put(new EntityPosition(EntityMetadata.Types.BYTE, (byte) 0), new WritableByte((byte) 0));
+        metadata.meta.entries.put(new EntityPosition(EntityMetadata.Types.SHORT, (byte) 1), new WritableShort((byte) 0));
+        metadata.meta.entries.put(new EntityPosition(EntityMetadata.Types.SLOT, (byte) 10), slot);
+        c.writePacket(metadata);
     }
 
     @Override

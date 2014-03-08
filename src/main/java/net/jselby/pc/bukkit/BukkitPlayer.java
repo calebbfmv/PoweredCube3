@@ -1264,4 +1264,8 @@ public class BukkitPlayer implements Player {
     public void setOp(boolean b) {
 
     }
+
+    public Client getPCPlayer() {
+        return client;
+    }
 }

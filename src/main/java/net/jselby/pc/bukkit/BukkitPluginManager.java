@@ -18,6 +18,9 @@
 
 package net.jselby.pc.bukkit;
 
+import net.jselby.pc.blocks.ItemStack;
+import net.jselby.pc.blocks.Material;
+import net.jselby.pc.network.ConnectedClient;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.event.Event;
@@ -50,7 +53,6 @@ public class BukkitPluginManager implements PluginManager {
 
     @Override
     public void callEvent(Event arg0) throws IllegalStateException {
-        System.out.println("Event thrown - " + arg0.getClass().getName());
     }
 
     @Override
@@ -255,11 +257,32 @@ public class BukkitPluginManager implements PluginManager {
     }
 
     public boolean callCommand(CommandSender sender, String name, String[] args) {
+        // Check for builtin commands
+        if (name.equalsIgnoreCase("/give")) {
+            int amount = 1;
+            if (args.length > 2) {
+                try {
+                    amount = Integer.parseInt(args[2]);
+                } catch (Exception e) {
+                    sender.sendMessage("Invalid number at argument 2.");
+                    return true;
+                }
+            }
+
+            Material mat = Material.matchMaterial(args[1]);
+            if (mat == null) {
+                sender.sendMessage("Invalid item.");
+                return true;
+            }
+
+            ItemStack i = new ItemStack(mat.getId(), (byte)0, amount);
+            BukkitPlayer p = (BukkitPlayer) sender;
+            ConnectedClient c = (ConnectedClient) p.getPCPlayer();
+            c.inv.addItem(i);
+            return true;
+        }
         try {
             for (Plugin p : getPlugins()) {
-                for (String s : args) {
-                    System.out.println("Arg: " + s);
-                }
                 return p.onCommand(sender, new BukkitCommand(name, (String)p.getConfig().get("commands." + name + ".description", ""),
                     (String)p.getConfig().get("commands." + name + ".usage", ""), new ArrayList<String>()), name, args);
             //if (p.getConfig().isSet("commands." + name)) {

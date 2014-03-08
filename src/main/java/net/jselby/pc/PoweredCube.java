@@ -93,7 +93,7 @@ public class PoweredCube {
         } else {
             World w = new World("world");
             worlds.add(w);
-            PoweredCubeWorldLoader.saveWorld(w);
+            //PoweredCubeWorldLoader.saveWorld(w);
         }
 
         // Load Bukkit plugins
@@ -112,7 +112,7 @@ public class PoweredCube {
             public void run() {
                 System.out.println("Saving world...");
                 for (World world : worlds) {
-                    PoweredCubeWorldLoader.saveWorld(world);
+                    //PoweredCubeWorldLoader.saveWorld(world);
                 }
             }
         });

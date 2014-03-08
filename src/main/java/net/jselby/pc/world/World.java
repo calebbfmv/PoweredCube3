@@ -138,6 +138,7 @@ public class World implements Serializable {
 
     public void spawnFloatingItem(double x, double y, double z, int typeId, byte data) {
         Random r = new Random();
+
         // Create entity
         FloatingItem i = new FloatingItem(PoweredCube.getInstance().getNextEntityID(), this, x, y, z, typeId, data);
         i.xSpeed = (short) (r.nextInt(2000) - 1000);

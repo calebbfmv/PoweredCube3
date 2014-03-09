@@ -108,8 +108,8 @@ public class PendingClient extends Client {
             int absChunkX = (int) Math.floor(x / 16);
             int absChunkZ = (int) Math.floor(z / 16);
 
-            for (int chunkX = (absChunkX-(3)); chunkX <= absChunkX+(3); chunkX++) {
-                for (int chunkZ = (absChunkZ-(3)); chunkZ <= absChunkZ+(3); chunkZ++) {
+            for (int chunkX = (absChunkX-(1)); chunkX <= absChunkX+(1); chunkX++) {
+                for (int chunkZ = (absChunkZ-(1)); chunkZ <= absChunkZ+(1); chunkZ++) {
                     loadedChunks.add(PoweredCube.getInstance().getWorlds().get(0)
                             .getChunkAt(chunkX, chunkZ));
                     PacketOutChunkData world = new PacketOutChunkData(chunkX, chunkZ);

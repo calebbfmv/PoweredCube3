@@ -30,7 +30,7 @@ import org.bukkit.inventory.Inventory;
  * @author j_selby
  */
 public class PlayerInventory {
-    public static final int MAX_STACK_SIZE = 64;
+    public static final int MAX_STACK_SIZE = 100;
 
     private Slot[] slots = new Slot[45];
     private Client c;
@@ -117,7 +117,7 @@ public class PlayerInventory {
                 continue;
             }
             if (slots[i].itemId == stack.id && slots[i].itemDamage == stack.data) {
-                if (slots[i].itemCount > MAX_STACK_SIZE && !allowFull) {
+                if (slots[i].itemCount >= MAX_STACK_SIZE && !allowFull) {
                     continue;
                 }
                 return slots[i];

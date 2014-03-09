@@ -30,8 +30,6 @@ import net.jselby.pc.world.World;
 import net.jselby.pc.network.packets.mcplay.*;
 import org.bukkit.block.Block;
 
-import java.io.IOException;
-
 /**
  * A class representing a connected client. Most networking action will go through here.
  *

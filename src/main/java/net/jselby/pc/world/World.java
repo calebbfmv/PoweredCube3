@@ -68,6 +68,7 @@ public class World implements Serializable {
             if (b != null && b.getTypeId() != Material.WATER.getId()) {
                 // Safe place
                 // Clear out chunk cache, we will do it again ourselves
+                System.out.println("Resetting cache...");
                 chunks.clear();
                 spawnX = ((double)searchX) + 0.5;
                 spawnY = b.y;
@@ -75,7 +76,7 @@ public class World implements Serializable {
 
                 for (int x = -INITIAL_SIZE + searchX; x <= INITIAL_SIZE + searchX; x++) {
                     for (int y = -INITIAL_SIZE + searchZ; y <= INITIAL_SIZE + searchZ; y++) {
-                        chunks.add(new Chunk(this, x, y));
+                        getChunkAt((x / 16), (y / 16));
                     }
                 }
                 break;
@@ -122,6 +123,7 @@ public class World implements Serializable {
 
     public void generateChunk(int x, int z) {
         if (getChunkAt(x, z, false) == null) {
+            System.out.println("Generating chunk: " + x + ":" + z);
             Chunk c = new Chunk(this, x, z);
             chunks.add(c);
         }

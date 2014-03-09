@@ -119,4 +119,9 @@ public class Chunk implements Serializable {
             }
         }
     }
+
+    @Override
+    public String toString() {
+        return "Chunk: " + getX() + ":" + getZ();
+    }
 }

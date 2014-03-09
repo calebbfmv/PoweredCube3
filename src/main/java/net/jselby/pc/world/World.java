@@ -39,6 +39,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 public class World implements Serializable {
     public static final int INITIAL_SIZE = 1;
     public static final int MAX_HEIGHT = 255;
+    public static final int MAX_CHUNKS = 0;
 
     private String name;
     public ArrayList<Chunk> chunks = new ArrayList<Chunk>();
@@ -74,7 +75,7 @@ public class World implements Serializable {
         while(true) {
             Block b = getHighestBlockAt(searchX, searchZ);
 
-            if (b != null && b.getTypeId() != Material.WATER.getId()) {
+            if ((b != null && b.getTypeId() != Material.WATER.getId()) || (MAX_CHUNKS != -1 && searchX > MAX_CHUNKS * 16)) {
                 // Safe place
                 // Clear out chunk cache, we will do it again ourselves
                 System.out.println("Resetting cache...");
@@ -117,6 +118,9 @@ public class World implements Serializable {
 
     public Chunk getChunkAt(int x, int z, boolean generateIfNotFound) {
         for (Chunk chunk : chunks.toArray(new Chunk[chunks.size()])) {
+            if (chunk == null) {
+                continue;
+            }
             if (chunk.getX() == x && chunk.getZ() == z) {
                 return chunk;
             }
@@ -133,6 +137,16 @@ public class World implements Serializable {
         if (chunkLoadQueue.contains(x + ":" + z)) {
             chunkLoadQueue.remove(x + ":" + z);
         }
+
+        if (MAX_CHUNKS != -1) {
+            if (x > MAX_CHUNKS || x < -MAX_CHUNKS) {
+                return;
+            }
+            if (z > MAX_CHUNKS || z < -MAX_CHUNKS) {
+                return;
+            }
+        }
+
         if (getChunkAt(x, z, false) == null) {
             // See if we have already got a chunk saved
             if (loader.chunkExists(this, x, z)) {

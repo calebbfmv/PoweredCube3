@@ -38,6 +38,7 @@ import java.util.ArrayList;
  * @author j_selby
  */
 public class ConnectedClient extends Client {
+
     public int maxLoadedChunks = 4;
     public int maxLoadedBlocks = maxLoadedChunks * 16;
 
@@ -125,7 +126,12 @@ public class ConnectedClient extends Client {
             PacketInClientSettings instance = (PacketInClientSettings) packet;
             System.out.println("View distance: " + instance.viewDistance);
             maxLoadedChunks = ((int)instance.viewDistance);
+            if (maxLoadedChunks > PoweredCube.getInstance().getMaxViewDistance()) {
+                maxLoadedChunks = PoweredCube.getInstance().getMaxViewDistance();
+            }
+            System.out.println("Client view distance " + instance.viewDistance + ", set to " + maxLoadedChunks);
             maxLoadedBlocks = maxLoadedChunks * 16;
+
 
         } else if (packet instanceof PacketInPlayerBlockPlacement) {
             PacketInPlayerBlockPlacement instance = (PacketInPlayerBlockPlacement) packet;
@@ -191,20 +197,24 @@ public class ConnectedClient extends Client {
         tick++;
         loggedIn++;
         // Check that client is loaded area-wise
-        if (tick % 5 == 0) {
+        if (tick % 20 == 0) {
             // Load chunks that are needed
             ArrayList<Chunk> loadingChunks = (ArrayList<Chunk>) loadedChunks.clone();
 
-            for (double tempX = (x / 16) - (maxLoadedChunks / 2); tempX < (x / 16) + (maxLoadedChunks / 2); tempX++) {
-                for (double tempZ = (z / 16) - (maxLoadedChunks / 2); tempZ < (z / 16) + (maxLoadedChunks / 2); tempZ++) {
+            for (int tempX = (int) (Math.floor(x / 16) - (maxLoadedChunks)); tempX < Math.floor(x / 16) + (maxLoadedChunks); tempX++) {
+                for (int tempZ = (int) (Math.floor(z / 16) - (maxLoadedChunks)); tempZ < Math.floor(z / 16) + (maxLoadedChunks); tempZ++) {
                     if (!world.isChunkLoaded((int)tempX, (int)tempZ)) {
+                        // Don't force the chunk load, let it happen by the ChunkLoadThread
                         world.requestChunkLoad((int)tempX, (int)tempZ);
                         continue;
                     }
+
                     Chunk c = world.getChunkAt((int)tempX, (int)tempZ);
                     loadingChunks.remove(c);
+
                     if (!loadedChunks.contains(c)) {
                         loadedChunks.add(c);
+                        // Send data to client
                         PacketOutChunkData world = new PacketOutChunkData(c.getX(), c.getZ(), false);
                         if (world.data != null && world.data.length != 0) {
                             writePacket(world);
@@ -215,6 +225,10 @@ public class ConnectedClient extends Client {
 
             // Find chunks to unload
             for (Chunk c : loadingChunks.toArray(new Chunk[loadingChunks.size()])) {
+                // Give the client a few ticks to load first
+                if (c == null) {
+                    continue;
+                }
                 if (loggedIn > 200) {
                     loadedChunks.remove(c);
                     PacketOutChunkData world = new PacketOutChunkData(c.getX(), c.getZ(), true);

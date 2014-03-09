@@ -57,6 +57,7 @@ public class PoweredCube {
 
     private int maxPlayers = 50;
     private int nextEntityID = 0;
+    private int maxViewDistance = 6;
 
     // End vanilla variables
 
@@ -242,5 +243,9 @@ public class PoweredCube {
 
     public int getNextEntityID() {
         return nextEntityID++;
+    }
+
+    public int getMaxViewDistance() {
+        return maxViewDistance;
     }
 }

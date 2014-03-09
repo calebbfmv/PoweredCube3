@@ -16,7 +16,7 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package net.jselby.pc;
+package net.jselby.pc.world;
 
 import net.jselby.pc.world.Chunk;
 import net.jselby.pc.world.ChunkIO;

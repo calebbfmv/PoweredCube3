@@ -253,7 +253,7 @@ public class World implements Serializable {
 
             System.gc();
 
-            System.out.println("Chunks loaded: " + chunks.size());
+            //System.out.println("Chunks loaded: " + chunks.size());
         }
 
         tick++;

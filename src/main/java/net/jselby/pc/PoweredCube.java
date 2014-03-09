@@ -26,6 +26,7 @@ import net.jselby.pc.network.Client;
 import net.jselby.pc.network.NetworkServer;
 import net.jselby.pc.network.Packet;
 import net.jselby.pc.network.PacketDefinitions;
+import net.jselby.pc.world.PoweredCubeWorldLoader;
 import net.jselby.pc.world.World;
 import org.bukkit.Server;
 import org.bukkit.entity.Player;

@@ -53,7 +53,7 @@ public class BukkitBlock implements org.bukkit.block.Block, Serializable {
 
     @Override
     public org.bukkit.block.Block getRelative(int x, int y, int z) {
-        return block.world.getBlockAt(getX() + x, getY() + y, getZ() + z).getBukkitBlock();
+        return block.chunk.world.getBlockAt(getX() + x, getY() + y, getZ() + z).getBukkitBlock();
     }
 
     @Override
@@ -93,7 +93,7 @@ public class BukkitBlock implements org.bukkit.block.Block, Serializable {
 
     @Override
     public World getWorld() {
-        return block.world.getBukkitWorld();
+        return block.chunk.world.getBukkitWorld();
     }
 
     @Override

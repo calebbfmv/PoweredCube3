@@ -30,14 +30,16 @@ import net.jselby.pc.world.World;
 import net.jselby.pc.network.packets.mcplay.*;
 import org.bukkit.block.Block;
 
+import java.util.ArrayList;
+
 /**
  * A class representing a connected client. Most networking action will go through here.
  *
  * @author j_selby
  */
 public class ConnectedClient extends Client {
-    public static final int LOADED_CHUNKS = 12;
-    public static final int LOADED_BLOCKS = LOADED_CHUNKS * 16;
+    public int maxLoadedChunks = 4;
+    public int maxLoadedBlocks = maxLoadedChunks * 16;
 
     public int tick = 0;
     public World world;
@@ -121,6 +123,9 @@ public class ConnectedClient extends Client {
 
         } else if (packet instanceof PacketInClientSettings) {
             PacketInClientSettings instance = (PacketInClientSettings) packet;
+            System.out.println("View distance: " + instance.viewDistance);
+            maxLoadedChunks = ((int)instance.viewDistance) * 2;
+            maxLoadedBlocks = maxLoadedChunks * 16;
 
         } else if (packet instanceof PacketInPlayerBlockPlacement) {
             PacketInPlayerBlockPlacement instance = (PacketInPlayerBlockPlacement) packet;
@@ -177,6 +182,7 @@ public class ConnectedClient extends Client {
         cache.yaw = yaw;
         cache.pitch = pitch;
         cache.inventory = inv.getArray();
+
     }
 
     public long timeOfDay = 6000;
@@ -184,13 +190,34 @@ public class ConnectedClient extends Client {
     public void tick() {
         tick++;
         // Check that client is loaded area-wise
-        for (double tempX = x - (LOADED_BLOCKS / 2); tempX < x + (LOADED_BLOCKS / 2); tempX += 16) {
-            for (double tempZ = z - (LOADED_BLOCKS / 2); tempZ < z + (LOADED_BLOCKS / 2); tempZ += 16) {
-                Chunk c = world.getBlockAt((int)tempX, 1, (int)tempZ).chunk;
-                if (!loadedChunks.contains(c)) {
-                    loadedChunks.add(c);
-                    PacketOutChunkData world = new PacketOutChunkData(c.getX(), c.getZ());
-                    if (world.data != null && world.data.length != 0) {
+        if (tick % 5 == 0) {
+            // Load chunks that are needed
+            ArrayList<Chunk> loadingChunks = new ArrayList<Chunk>();
+
+            for (double tempX = x - (maxLoadedBlocks / 2); tempX < x + (maxLoadedBlocks / 2); tempX += 16) {
+                for (double tempZ = z - (maxLoadedBlocks / 2); tempZ < z + (maxLoadedBlocks / 2); tempZ += 16) {
+                    Chunk c = world.getBlockAt((int)tempX, 1, (int)tempZ).chunk;
+                    if (!loadingChunks.contains(c)) {
+                        loadingChunks.add(c);
+                    }
+                    if (!loadedChunks.contains(c)) {
+                        loadedChunks.add(c);
+                        PacketOutChunkData world = new PacketOutChunkData(c.getX(), c.getZ(), false);
+                        if (world.data != null && world.data.length != 0) {
+                            writePacket(world);
+                        }
+                    }
+                }
+            }
+
+            // Find chunks to unload
+            for (Chunk c : loadedChunks.toArray(new Chunk[loadingChunks.size()])) {
+                if (!loadingChunks.contains(c)) {
+                    // Chunk out of range
+                    // Send unload
+                    loadedChunks.remove(c);
+                    PacketOutChunkData world = new PacketOutChunkData(c.getX(), c.getZ(), true);
+                    if (world.data != null) {
                         writePacket(world);
                     }
                 }

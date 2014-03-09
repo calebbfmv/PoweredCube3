@@ -83,17 +83,19 @@ public class PoweredCube {
         // Create/load world
         worlds = new ArrayList<World>();
 
-        if (PoweredCubeWorldLoader.worldExists("world")) {
-            World w = PoweredCubeWorldLoader.loadWorld("world");
+        final PoweredCubeWorldLoader loader = new PoweredCubeWorldLoader();
+
+        if (loader.worldExists("world")) {
+            World w = loader.loadWorld("world");
             if (w == null) {
                 System.err.println("World could not be loaded - check file!");
                 System.exit(0);
             }
             worlds.add(w);
         } else {
-            World w = new World("world");
+            World w = new World("world", loader);
             worlds.add(w);
-            //PoweredCubeWorldLoader.saveWorld(w);
+            loader.saveWorld(w);
         }
 
         // Load Bukkit plugins
@@ -112,7 +114,7 @@ public class PoweredCube {
             public void run() {
                 System.out.println("Saving world...");
                 for (World world : worlds) {
-                    //PoweredCubeWorldLoader.saveWorld(world);
+                    loader.saveWorld(world);
                 }
             }
         });

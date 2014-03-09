@@ -30,7 +30,6 @@ import net.jselby.pc.network.packets.mcping.PacketInRequest;
 import net.jselby.pc.network.packets.mcping.PacketOutResponse;
 import net.jselby.pc.network.packets.mcplay.*;
 
-import java.io.IOException;
 import java.util.UUID;
 
 /**
@@ -112,7 +111,7 @@ public class PendingClient extends Client {
                 for (int chunkZ = (absChunkZ-(1)); chunkZ <= absChunkZ+(1); chunkZ++) {
                     loadedChunks.add(PoweredCube.getInstance().getWorlds().get(0)
                             .getChunkAt(chunkX, chunkZ));
-                    PacketOutChunkData world = new PacketOutChunkData(chunkX, chunkZ);
+                    PacketOutChunkData world = new PacketOutChunkData(chunkX, chunkZ, false);
                     if (world.data != null && world.data.length != 0) {
                         writePacket(world);
                     }

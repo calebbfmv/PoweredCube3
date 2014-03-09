@@ -49,8 +49,11 @@ public class World implements Serializable {
     public double spawnX;
     public double spawnY;
     public double spawnZ;
+    public WorldLoader loader;
 
-    public World(String name) {
+    public World(String name, WorldLoader loader) {
+        loader.worldExists("");
+        this.loader = loader;
         seed = new Seed(new Random().nextLong());
         this.random = new Random(seed.seed);
 
@@ -74,11 +77,11 @@ public class World implements Serializable {
                 spawnY = b.y;
                 spawnZ = ((double)searchZ) + 0.5;
 
-                for (int x = -INITIAL_SIZE + searchX; x <= INITIAL_SIZE + searchX; x++) {
+                /*for (int x = -INITIAL_SIZE + searchX; x <= INITIAL_SIZE + searchX; x++) {
                     for (int y = -INITIAL_SIZE + searchZ; y <= INITIAL_SIZE + searchZ; y++) {
-                        getChunkAt((x / 16), (y / 16));
+                        //getChunkAt((x / 16), (y / 16));
                     }
-                }
+                }*/
                 break;
             }
 
@@ -88,6 +91,13 @@ public class World implements Serializable {
 
     }
 
+    public World(String name, ArrayList<Chunk> chunks, WorldLoader loader) {
+        this.name = name;
+        this.chunks = chunks;
+        this.loader = loader;
+        thisAsBukkit = new BukkitWorld(this);
+    }
+
     private Block getHighestBlockAt(int x, int z) {
         for (int y = MAX_HEIGHT; y > 0; y--) {
             if (getBlockAt(x, y - 1, z).getTypeId() != 0) {
@@ -95,12 +105,6 @@ public class World implements Serializable {
             }
         }
         return null;
-    }
-
-    public World(String name, ArrayList<Chunk> chunks) {
-        this.name = name;
-        this.chunks = chunks;
-        thisAsBukkit = new BukkitWorld(this);
     }
 
     public Chunk getChunkAt(int x, int z) {
@@ -123,6 +127,16 @@ public class World implements Serializable {
 
     public void generateChunk(int x, int z) {
         if (getChunkAt(x, z, false) == null) {
+            // See if we have already got a chunk saved
+            if (loader.chunkExists(this, x, z)) {
+                System.out.println("Loading already loaded chunk: " + x + ":" + z);
+                try {
+                    chunks.add(loader.loadChunk(this, x, z));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                return;
+            }
             System.out.println("Generating chunk: " + x + ":" + z);
             Chunk c = new Chunk(this, x, z);
             chunks.add(c);
@@ -148,7 +162,7 @@ public class World implements Serializable {
             // int id, World world, Chunk chunk, byte data, int x, int y, int z
             // Empty block - fill it out
 
-            c.blocks[absChunkX][y][absChunkZ] = new Block(Material.AIR, this, c, (byte) 0, x, y, z);
+            c.blocks[absChunkX][y][absChunkZ] = new Block(Material.AIR, c, (byte) 0, x, y, z);
             b = c.blocks[absChunkX][y][absChunkZ];
         }
 

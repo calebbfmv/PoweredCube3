@@ -33,7 +33,7 @@ import java.util.Random;
 public class Chunk implements Serializable {
 
     public Block[][][] blocks = new Block[16][256][16];
-    private World world;
+    public World world;
     private int x;
     private int z;
     private BukkitChunk c;
@@ -67,7 +67,7 @@ public class Chunk implements Serializable {
                     // Water
                     for (double y = 70; y >= actualY; y--) {
                         blocks[x][(int)y][z] =
-                                new Block(Material.WATER, world,
+                                new Block(Material.WATER,
                                         this, absChunkX + x, (int)y, absChunkZ + z);
                     }
                 } else {
@@ -77,11 +77,11 @@ public class Chunk implements Serializable {
                     } else if (r.nextInt(2) == 1) {
                         // Generate grass here
                         blocks[x][(int)actualY + 1][z] =
-                                new Block(Material.LONG_GRASS, world,
+                                new Block(Material.LONG_GRASS,
                                         this, (byte)1, absChunkX + x, (int)actualY + 1, absChunkZ + z);
                     }
                     blocks[x][(int)actualY][z] =
-                            new Block(Material.GRASS, world,
+                            new Block(Material.GRASS,
                                     this, absChunkX + x, (int)actualY, absChunkZ + z);
                 }
 
@@ -91,17 +91,17 @@ public class Chunk implements Serializable {
                 }
                 for (double y = actualY - 1; y > actualY - 5; y--) {
                     blocks[x][(int)y][z] =
-                            new Block(Material.DIRT, world,
+                            new Block(Material.DIRT,
                                     this, absChunkX + x, (int)y, absChunkZ + z);
                 }
 
                 for (double y = actualY - 5; y > 1; y--) {
                     blocks[x][(int)y][z] =
-                            new Block(Material.STONE, world,
+                            new Block(Material.STONE,
                                     this, absChunkX + x, (int)y, absChunkZ + z);
                 }
                 blocks[x][1][z] =
-                        new Block(Material.BEDROCK, world,
+                        new Block(Material.BEDROCK,
                                 this, absChunkX + x, 1, absChunkZ + z);
             }
         }

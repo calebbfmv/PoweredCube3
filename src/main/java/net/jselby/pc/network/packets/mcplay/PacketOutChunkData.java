@@ -30,21 +30,27 @@ public class PacketOutChunkData extends Packet {
     public int x;
     public int z;
     public byte[] data;
+    public boolean unload = false;
 
     public PacketOutChunkData() {}
 
-    public PacketOutChunkData(int x, int z) {
+    public PacketOutChunkData(int x, int z, boolean unload) {
         this.x = x;
         this.z = z;
-        try {
-            byte[] toData = PacketOutMapChunkBulk.generateChunk(x, z);
-            if (toData == null) {
-                byte[] data = new byte[0];
-                return;
+        if (unload) {
+            this.unload = true;
+            data = new byte[0];
+        } else {
+            try {
+                byte[] toData = PacketOutMapChunkBulk.generateChunk(x, z);
+                if (toData == null) {
+                    byte[] data = new byte[0];
+                    return;
+                }
+                data = PacketOutMapChunkBulk.deflate(toData);
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-            data = PacketOutMapChunkBulk.deflate(toData);
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 
@@ -54,9 +60,15 @@ public class PacketOutChunkData extends Packet {
         int chunkZ = z;
         boolean groundUpContinuous = true;
         BitSet primaryBitmap = new BitSet(256 / 16);
-        primaryBitmap.set(0, 256 / 16, true); // We include all chunks
+        if (unload) {
+        } else {
+            primaryBitmap.set(0, 256 / 16, true); // We include all chunks
+        }
         BitSet addBitmap = new BitSet(256 / 16);
-        addBitmap.set(0, 256 / 16, false); // We don't have anything above
+        if (unload) {
+        } else {
+            addBitmap.set(0, 256 / 16, false); // We don't have anything above
+        }
         int dataSize = data.length;
 
         output.writeInt(chunkX);

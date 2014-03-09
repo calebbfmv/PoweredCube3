@@ -36,36 +36,34 @@ public class Block implements Serializable {
     public final int x;
     public final int y;
     public final int z;
-    public final World world;
     public final Chunk chunk;
     private BukkitBlock bukkitBlock;
 
-    public Block(Material mat, World world, Chunk chunk, int x, int y, int z) {
-        this(mat, world, chunk, (byte) 0, x, y, z);
+    public Block(Material mat, Chunk chunk, int x, int y, int z) {
+        this(mat.getId(), chunk, (byte) 0, x, y, z);
     }
 
     @Deprecated
-    public Block(int id, World world, Chunk chunk, int x, int y, int z) {
-        this(id, world, chunk, (byte) 0, x, y, z);
+    public Block(int id, Chunk chunk, int x, int y, int z) {
+        this(id, chunk, (byte) 0, x, y, z);
     }
 
     @Deprecated
-    public Block(int id, World world, Chunk chunk, byte data, int x, int y,
+    public Block(int id, Chunk chunk, byte data, int x, int y,
                      int z) {
         this.id = id;
         this.data = data;
         this.x = x;
         this.y = y;
         this.z = z;
-        this.world = world;
         this.chunk = chunk;
         bukkitBlock = new BukkitBlock(this);
     }
 
     @SuppressWarnings("deprecation")
-    public Block(Material id, World world, Chunk chunk, byte data, int x,
+    public Block(Material id, Chunk chunk, byte data, int x,
                      int y, int z) {
-        this(id.getId(), world, chunk, data, x, y, z);
+        this(id.getId(), chunk, data, x, y, z);
     }
 
     public org.bukkit.block.Block getBukkitBlock() {
@@ -96,7 +94,7 @@ public class Block implements Serializable {
 
     public void breakNaturally() {
         // Make sure there's nothing above us, that falls
-        Block b = world.getBlockAt(x, y + 1, z);
+        Block b = chunk.world.getBlockAt(x, y + 1, z);
         if (b != null && b.getTypeId() != 0 && b.hasGravity()) {
             b.breakNaturally();
         }

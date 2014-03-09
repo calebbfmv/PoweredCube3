@@ -19,6 +19,7 @@
 package net.jselby.pc;
 
 import net.jselby.pc.world.Chunk;
+import net.jselby.pc.world.ChunkIO;
 import net.jselby.pc.world.World;
 import net.jselby.pc.world.WorldLoader;
 
@@ -29,6 +30,8 @@ import java.util.ArrayList;
  * Created by James on 2/16/14.
  */
 public class PoweredCubeWorldLoader extends WorldLoader {
+    public ChunkIO chunkIO = new ChunkIO();
+
     public World loadWorld(String world) {
         try {
             System.out.println("Loading world \"" + world + "\" from file...");
@@ -80,13 +83,7 @@ public class PoweredCubeWorldLoader extends WorldLoader {
                     continue;
                 }
                 alreadySaved.add(c.getX() + ":" + c.getZ());
-                System.out.println("Saving chunk: " + c.getX() + ":" + c.getZ());
-                c.world = null;
-                File chunkFile = new File(file, c.getX() + "-" + c.getZ() + ".chunk");
-                out = new ObjectOutputStream(new FileOutputStream(chunkFile));
-                out.writeObject(c);
-                out.close();
-                c.world = world;
+                saveChunk(c);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -107,9 +104,8 @@ public class PoweredCubeWorldLoader extends WorldLoader {
     public Chunk loadChunk(World world, int x, int z) {
         try {
             File chunk = new File(new File(world.getName() + "_chunks"), x + "-" + z + ".chunk");
-
-            ObjectInputStream in = new ObjectInputStream(new FileInputStream(chunk));
-            Chunk c = (Chunk) in.readObject();
+            InputStream in = new FileInputStream(chunk);
+            Chunk c = chunkIO.read(in, world);
             in.close();
             c.world = world;
             return c;
@@ -117,5 +113,19 @@ public class PoweredCubeWorldLoader extends WorldLoader {
             e.printStackTrace();
         }
         return null;
+    }
+
+    @Override
+    public void saveChunk(Chunk c) {
+        //System.out.println("Saving chunk: " + c.getX() + ":" + c.getZ());
+        try {
+            File chunkFile = new File(new File(c.world.getName() + "_chunks"), c.getX() + "-" + c.getZ() + ".chunk");
+            OutputStream chunkOut = new FileOutputStream(chunkFile);
+            chunkIO.write(chunkOut, c);
+            chunkOut.flush();
+            chunkOut.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

@@ -47,6 +47,8 @@ public class World implements Serializable {
     public EntityManager m = new EntityManager();
     public Random random;
 
+    public int tick;
+
     public double spawnX;
     public double spawnY;
     public double spawnZ;
@@ -130,7 +132,7 @@ public class World implements Serializable {
         if (getChunkAt(x, z, false) == null) {
             // See if we have already got a chunk saved
             if (loader.chunkExists(this, x, z)) {
-                System.out.println("Loading already generated chunk: " + x + ":" + z);
+                //System.out.println("Loading already generated chunk: " + x + ":" + z);
                 try {
                     chunks.add(loader.loadChunk(this, x, z));
                 } catch (Exception e) {
@@ -138,9 +140,10 @@ public class World implements Serializable {
                 }
                 return;
             }
-            System.out.println("Generating chunk: " + x + ":" + z);
+            //System.out.println("Generating chunk: " + x + ":" + z);
             Chunk c = new Chunk(this, x, z);
             chunks.add(c);
+            c.generate();
         }
     }
 
@@ -226,5 +229,36 @@ public class World implements Serializable {
     public void tick() {
         // Tick the entities
         m.tick();
+
+        // Unload ALL the chunks (or just the ones without players nearby)
+        if (tick == 20) {
+            ArrayList<Chunk> keepChunks = new ArrayList<Chunk>();
+
+            for (Client c : PoweredCube.getInstance().clients.toArray(new Client[0])) {
+                if (c.world != this) {
+                    continue;
+                }
+                for (Chunk chunk : c.loadedChunks) {
+                    keepChunks.add(chunk);
+                }
+            }
+
+            for (Chunk chunk : chunks.toArray(new Chunk[chunks.size()])) {
+                if (!keepChunks.contains(chunk)) {
+                    //System.out.println("Unloading chunk " + chunk.getX() + ":" + chunk.getZ());
+                    loader.saveChunk(chunk);
+                    chunks.remove(chunk);
+                }
+            }
+
+            System.gc();
+
+            System.out.println("Chunks loaded: " + chunks.size());
+        }
+
+        tick++;
+        if (tick > 20) {
+            tick = 0;
+        }
     }
 }

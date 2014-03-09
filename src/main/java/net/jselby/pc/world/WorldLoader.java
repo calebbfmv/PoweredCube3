@@ -39,4 +39,6 @@ public abstract class WorldLoader {
     public abstract boolean chunkExists(World world, int x, int z);
 
     public abstract Chunk loadChunk(World world, int x, int z);
+
+    public abstract void saveChunk(Chunk chunk);
 }

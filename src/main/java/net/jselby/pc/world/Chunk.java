@@ -32,7 +32,7 @@ import java.util.Random;
  */
 public class Chunk implements Serializable {
 
-    public Block[][][] blocks = new Block[16][256][16];
+    public Block[][][] blocks = null;
     public World world;
     private int x;
     private int z;
@@ -46,8 +46,32 @@ public class Chunk implements Serializable {
 
         c = new BukkitChunk(this);
 
-        int absChunkX = chunkX * 16;
-        int absChunkZ = chunkZ * 16;
+        blocks = new Block[16][256][16];
+    }
+
+    public int getX() {
+        return x;
+    }
+
+    public int getZ() {
+        return z;
+    }
+
+    public World getWorld() {
+        return world;
+    }
+
+    public int getSeaLevel() {
+        return getWorld().getSeaLevel();
+    }
+
+    public org.bukkit.Chunk getBukkitChunk() {
+        return c;
+    }
+
+    public void generate() {
+        int absChunkX = x * 16;
+        int absChunkZ = z * 16;
 
         // Generate perlin noise
         Random r = world.random;
@@ -58,11 +82,11 @@ public class Chunk implements Serializable {
 
         for (int x = 0; x < 16; x++) {
             for (int z = 0; z < 16; z++) {
-                int actualY = (int)Math.floor(70 + generator.noise(((float) x + (chunkX * 16)) / 512f,
-                        ((float) z + (chunkZ * 16)) / 512f, 7, (double) 1.5, 1.5));
+                int actualY = (int)Math.floor(70 + generator.noise((absChunkX + x) / 512f,
+                        (absChunkZ + z) / 512f, 7, (double) 1.5, 1.5));
 
-                        //FastNoise.noise(((float) x + (chunkX * 16)) / 512f,
-                        //((float) z + (chunkZ * 16)) / 512f, 7);
+                //FastNoise.noise(((float) x + (chunkX * 16)) / 512f,
+                //((float) z + (chunkZ * 16)) / 512f, 7);
                 if (actualY < 70) {
                     // Water
                     for (double y = 70; y >= actualY; y--) {
@@ -105,25 +129,5 @@ public class Chunk implements Serializable {
                                 this, absChunkX + x, 1, absChunkZ + z);
             }
         }
-    }
-
-    public int getX() {
-        return x;
-    }
-
-    public int getZ() {
-        return z;
-    }
-
-    public World getWorld() {
-        return world;
-    }
-
-    public int getSeaLevel() {
-        return getWorld().getSeaLevel();
-    }
-
-    public org.bukkit.Chunk getBukkitChunk() {
-        return c;
     }
 }

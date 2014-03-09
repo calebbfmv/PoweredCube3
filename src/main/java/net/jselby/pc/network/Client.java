@@ -24,6 +24,7 @@ import io.netty.channel.ChannelHandlerContext;
 import net.jselby.pc.entities.FloatingItem;
 import net.jselby.pc.world.Chunk;
 import net.jselby.pc.world.PlayerCache;
+import net.jselby.pc.world.World;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
@@ -42,6 +43,7 @@ public abstract class Client {
     public double x;
     public double y;
     public double z;
+    public World world;
     public float yaw;
     public float pitch;
     public boolean onGround = false;

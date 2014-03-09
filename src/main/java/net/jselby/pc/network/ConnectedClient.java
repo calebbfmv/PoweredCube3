@@ -42,7 +42,6 @@ public class ConnectedClient extends Client {
     public int maxLoadedBlocks = maxLoadedChunks * 16;
 
     public int tick = 0;
-    public World world;
     public int gamemode = 0;
 
     public int selectedSlot = 0; // begins at inv.slots.length - 9, or 36

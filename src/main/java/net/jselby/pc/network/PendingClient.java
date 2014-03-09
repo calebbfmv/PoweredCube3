@@ -20,6 +20,7 @@ package net.jselby.pc.network;
 
 import io.netty.channel.ChannelHandlerContext;
 import net.jselby.pc.entities.FloatingItem;
+import net.jselby.pc.entities.PlayerDisplayer;
 import net.jselby.pc.world.PlayerCache;
 import net.jselby.pc.PoweredCube;
 import net.jselby.pc.network.packets.mcdefault.PacketInHandshake;
@@ -141,6 +142,12 @@ public class PendingClient extends Client {
             time.ageOfWorld = 0;
 
             writePacket(time);
+
+            // Show other players
+            for (Client otherClient : PoweredCube.getInstance().clients.toArray(
+                    new Client[PoweredCube.getInstance().clients.size()])) {
+                PlayerDisplayer.showPlayer((ConnectedClient) otherClient, this);
+            }
         }
     }
 

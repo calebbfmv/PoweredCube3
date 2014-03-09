@@ -26,6 +26,7 @@ import net.jselby.pc.network.Client;
 import net.jselby.pc.network.NetworkServer;
 import net.jselby.pc.network.Packet;
 import net.jselby.pc.network.PacketDefinitions;
+import net.jselby.pc.network.packets.mcplay.PacketOutEntityLookRelativeMove;
 import net.jselby.pc.world.ChunkLoadThread;
 import net.jselby.pc.world.PoweredCubeWorldLoader;
 import net.jselby.pc.world.World;
@@ -225,6 +226,14 @@ public class PoweredCube {
     public void distributePacket(Packet packet) {
         for (Client p : clients.toArray(new Client[clients.size()])) {
             p.writePacket(packet);
+        }
+    }
+
+    public void distributePacket(Packet packet, ArrayList<Client> excludes) {
+        for (Client p : clients.toArray(new Client[clients.size()])) {
+            if (!excludes.contains(p)) {
+                p.writePacket(packet);
+            }
         }
     }
 

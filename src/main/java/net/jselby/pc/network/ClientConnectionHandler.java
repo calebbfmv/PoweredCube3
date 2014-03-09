@@ -58,35 +58,7 @@ public class ClientConnectionHandler extends ChannelHandlerAdapter {
             newClient.loadedChunks = cl.loadedChunks;
             cl = newClient;
 
-            BukkitPlayer p = new BukkitPlayer(cl);
-            PoweredCube.getInstance().players.add(p);
-            System.out.println(cl.name + "[" + ctx.channel().remoteAddress() + "] logged in with entity id " +
-                    cl.id + " at ([world] " + cl.x
-                    + ", " + cl.y + ", " + cl.z + ")");
-
-            // Welcome messages
-            PacketOutChatMessage joinMsg = new PacketOutChatMessage();
-
-            joinMsg.message = ChatMessage.convertToJson("Welcome to the server!");
-            joinMsg.message.json.put("color", "gold");
-            cl.writePacket(joinMsg);
-
-            joinMsg.message = ChatMessage.convertToJson("This server is running PoweredCube - http://pc.jselby.net");
-            joinMsg.message.json.put("color", "gold");
-            JSONObject clickEvent = new JSONObject();
-            clickEvent.put("action", "open_url");
-            clickEvent.put("value", "http://pc.jselby.net");
-            joinMsg.message.json.put("clickEvent", clickEvent);
-            cl.writePacket(joinMsg);
-
-            joinMsg.message = ChatMessage.convertToJson("Any number of bugs can occur. You have been warned!");
-            joinMsg.message.json.put("color", "red");
-            cl.writePacket(joinMsg);
-
-            PoweredCube.getInstance().clients.add(cl);
-
-            joinMsg.message = ChatMessage.convertToJson(cl.displayName + " joined the server.");
-            PoweredCube.getInstance().distributePacket(joinMsg);
+            JoinHandler.join(ctx, cl);
         }
 
         UnreadPacket packetContainer = (UnreadPacket) msg;
@@ -122,8 +94,6 @@ public class ClientConnectionHandler extends ChannelHandlerAdapter {
     }
 
     public void init(SocketAddress remoteAddress, ChannelHandlerContext ctx) throws Exception {
-        //System.out.println("Recieved connection from " + remoteAddress.toString());
-
         PendingClient cl = new PendingClient(ctx);
         this.cl = cl;
         cl.state = PacketDefinitions.State.DEFAULT;

@@ -49,6 +49,7 @@ public class ConnectedClient extends Client {
     public int selectedSlot = 0; // begins at inv.slots.length - 9, or 36
 
     public PlayerInventory inv = new PlayerInventory(this);
+    public float health = 20;
 
     /**
      * Creates a ConnectedClient from a ALREADY existing connection.
@@ -61,6 +62,11 @@ public class ConnectedClient extends Client {
 
     @Override
     public void onPacketReceive(Packet packet) {
+        double lastX = x;
+        double lastY = y;
+        double lastZ = z;
+        float lastYaw = yaw;
+        float lastPitch = pitch;
         //if (packet.getId() != 3 && packet.getId() != 0 && packet.getId() != 4 && packet.getId() != 5 && packet.getId() != 6)
         //    System.out.println("Got packet: " + packet.getId());
         // Check for the player "cache"
@@ -189,6 +195,29 @@ public class ConnectedClient extends Client {
         cache.pitch = pitch;
         cache.inventory = inv.getArray();
 
+        if (lastX != x || lastY != y || lastZ != z || lastYaw != yaw || lastPitch != pitch) {
+            double differenceX = x - lastX;
+            double differenceY = y - lastY;
+            double differenceZ = z - lastZ;
+
+            if (differenceX > 4 || differenceX < -4 ||
+                    differenceY > 4 || differenceY < -4 ||
+                    differenceZ > 4 || differenceZ < -4) {
+                System.out.println("Teleport!");
+            } else {
+                PacketOutEntityLookRelativeMove movement = new PacketOutEntityLookRelativeMove();
+                movement.pitch = (byte) (pitch / 360);
+                movement.yaw = (byte) (yaw / 360);
+                movement.entityId = id;
+                movement.x = (byte) (differenceX * 36);
+                movement.y = (byte) (differenceY * 36);
+                movement.z = (byte) (differenceZ * 36);
+                ArrayList<Client> excludes = new ArrayList<Client>();
+                excludes.add(this);
+                PoweredCube.getInstance().distributePacket(movement, excludes);
+            }
+        }
+
     }
 
     public long timeOfDay = 6000;
@@ -230,11 +259,12 @@ public class ConnectedClient extends Client {
                     continue;
                 }
                 if (loggedIn > 200) {
-                    loadedChunks.remove(c);
+                    System.out.println("Unloading chunk: " + c);
+                    /*loadedChunks.remove(c);
                     PacketOutChunkData world = new PacketOutChunkData(c.getX(), c.getZ(), true);
                     if (world.data != null) {
                         writePacket(world);
-                    }
+                    }*/
                 }
             }
         }

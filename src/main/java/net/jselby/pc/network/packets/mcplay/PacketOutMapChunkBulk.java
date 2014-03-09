@@ -64,26 +64,19 @@ public class PacketOutMapChunkBulk {
         int x = 1; // Changes the fastest
         int z = 1; // Second fastest
         int y = 1; // Third fastest
-        Block lastBlock = null;
+        int lastData = 0x00;
         for (int i = 0; i < chunkSize; i++) {
-            Block bukkitBlock = chunk.blocks[x - 1][y - 1][z - 1];
-            byte block;
-            if (bukkitBlock == null) {
-                block = 0;
-            } else {
-                block = (byte) chunk.blocks[x - 1][y - 1][z - 1].getTypeId();
-            }
-            blockTypeArray[i] = block;
+            int block = chunk.blocks[x - 1][y - 1][z - 1];
+            blockTypeArray[i] = (byte) block;
             if (!(i % 2 == 0)) {
                 // 2nd data
-                int data = (byte)((bukkitBlock == null ? 0x00
-                        : bukkitBlock.getData()));
-                int data2 = (byte)((lastBlock == null ? 0x00
-                        : lastBlock.getData()));
+                int data = chunk.data[x - 1][y - 1][z - 1];
+                int data2 = lastData;
 
                 blockMetadataArray[i / 2] = (byte) ((data << 4) + data2);
                         //(byte)(blockMetadataArray[i / 2] + data);
             }
+            lastData = chunk.data[x - 1][y - 1][z - 1];
             x++;
             if (x > 16) {
                 z++;
@@ -93,7 +86,6 @@ public class PacketOutMapChunkBulk {
                 y++;
                 z = 1;
             }
-            lastBlock = bukkitBlock;
         }
 
         for (int i = 0; i < chunkSize / 2; i++) {

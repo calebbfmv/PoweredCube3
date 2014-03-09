@@ -31,6 +31,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  * Created by James on 2/1/14.
@@ -41,6 +42,8 @@ public class World implements Serializable {
 
     private String name;
     public ArrayList<Chunk> chunks = new ArrayList<Chunk>();
+    public ArrayList<Chunk> savingChunks = new ArrayList<Chunk>();
+    public ConcurrentLinkedQueue<String> chunkLoadQueue = new ConcurrentLinkedQueue<String>();
     public HashMap<String, PlayerCache> caches = new HashMap<String, PlayerCache>();
     private BukkitWorld thisAsBukkit;
     private Seed seed;
@@ -90,8 +93,6 @@ public class World implements Serializable {
 
             searchX += 12;
         }
-
-
     }
 
     public World(String name, ArrayList<Chunk> chunks, WorldLoader loader) {
@@ -129,6 +130,9 @@ public class World implements Serializable {
     }
 
     public void generateChunk(int x, int z) {
+        if (chunkLoadQueue.contains(x + ":" + z)) {
+            chunkLoadQueue.remove(x + ":" + z);
+        }
         if (getChunkAt(x, z, false) == null) {
             // See if we have already got a chunk saved
             if (loader.chunkExists(this, x, z)) {
@@ -159,16 +163,8 @@ public class World implements Serializable {
         if (c == null) {
             return null;
         }
-        Block b = c.blocks[absChunkX][y][absChunkZ];
-        if (b == null) {
-            // int id, World world, Chunk chunk, byte data, int x, int y, int z
-            // Empty block - fill it out
 
-            c.blocks[absChunkX][y][absChunkZ] = new Block(Material.AIR, c, (byte) 0, x, y, z);
-            b = c.blocks[absChunkX][y][absChunkZ];
-        }
-
-        return b;
+        return new Block(c.blocks[absChunkX][y][absChunkZ], c, c.data[absChunkX][y][absChunkZ], x, y, z);
     }
 
     public String getName() {
@@ -245,15 +241,25 @@ public class World implements Serializable {
             }
 
             for (final Chunk chunk : chunks.toArray(new Chunk[chunks.size()])) {
+                if (savingChunks.size() > 4) {
+                    break;
+                }
+                if (savingChunks.contains(chunk)) {
+                    continue;
+                }
                 if (!keepChunks.contains(chunk)) {
                     // Do it in a thread
+                    savingChunks.add(chunk);
                     Thread saveThread = new Thread() {
                         @Override
                         public void run() {
+                            //System.out.println("Unloading chunk: " + chunk.getX() + ":" + chunk.getZ());
                             loader.saveChunk(chunk);
                             chunks.remove(chunk);
+                            savingChunks.remove(chunk);
                         }
                     };
+                    saveThread.start();
                 }
             }
 
@@ -265,6 +271,17 @@ public class World implements Serializable {
         tick++;
         if (tick > 20) {
             tick = 0;
+        }
+    }
+
+    public boolean isChunkLoaded(int x, int z) {
+        return getChunkAt(x, z, false) != null;
+    }
+
+    public void requestChunkLoad(int x, int z) {
+        if (!chunkLoadQueue.contains(x + ":" + z)) {
+            //System.out.println("Adding to load queue: " + x + ":" + z);
+            chunkLoadQueue.add(x + ":" + z);
         }
     }
 }

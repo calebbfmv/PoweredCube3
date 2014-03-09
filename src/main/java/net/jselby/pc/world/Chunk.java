@@ -31,8 +31,10 @@ import java.util.Random;
  * Created by James on 2/1/14.
  */
 public class Chunk implements Serializable {
+    public int[][][] blocks = new int[16][256][16];
+    public byte[][][] data = new byte[16][256][16];
 
-    public Block[][][] blocks = null;
+    //public Block[][][] blocks = null;
     public World world;
     private int x;
     private int z;
@@ -45,8 +47,6 @@ public class Chunk implements Serializable {
         this.z = chunkZ;
 
         c = new BukkitChunk(this);
-
-        blocks = new Block[16][256][16];
     }
 
     public int getX() {
@@ -90,23 +90,18 @@ public class Chunk implements Serializable {
                 if (actualY < 70) {
                     // Water
                     for (double y = 70; y >= actualY; y--) {
-                        blocks[x][(int)y][z] =
-                                new Block(Material.WATER,
-                                        this, absChunkX + x, (int)y, absChunkZ + z);
+                        blocks[x][(int)y][z] = Material.WATER.getId();
                     }
                 } else {
                     if (r.nextInt(500) == 1) {
                         // Generate Tree here
-                        Tree.generate(this, absChunkX + x, (int) actualY, absChunkZ + z, r.nextLong());
+                        Tree.generate(this, absChunkX + x, actualY, absChunkZ + z, r.nextLong());
                     } else if (r.nextInt(2) == 1) {
                         // Generate grass here
-                        blocks[x][(int)actualY + 1][z] =
-                                new Block(Material.LONG_GRASS,
-                                        this, (byte)1, absChunkX + x, (int)actualY + 1, absChunkZ + z);
+                        blocks[x][actualY + 1][z] = Material.LONG_GRASS.getId();
+                        data[x][actualY + 1][z] = 0x01;
                     }
-                    blocks[x][(int)actualY][z] =
-                            new Block(Material.GRASS,
-                                    this, absChunkX + x, (int)actualY, absChunkZ + z);
+                    blocks[x][actualY][z] = Material.GRASS.getId();
                 }
 
                 if (actualY < 70) {
@@ -114,19 +109,13 @@ public class Chunk implements Serializable {
                     actualY ++;
                 }
                 for (double y = actualY - 1; y > actualY - 5; y--) {
-                    blocks[x][(int)y][z] =
-                            new Block(Material.DIRT,
-                                    this, absChunkX + x, (int)y, absChunkZ + z);
+                    blocks[x][(int)y][z] = Material.DIRT.getId();
                 }
 
                 for (double y = actualY - 5; y > 1; y--) {
-                    blocks[x][(int)y][z] =
-                            new Block(Material.STONE,
-                                    this, absChunkX + x, (int)y, absChunkZ + z);
+                    blocks[x][(int)y][z] = Material.STONE.getId();
                 }
-                blocks[x][1][z] =
-                        new Block(Material.BEDROCK,
-                                this, absChunkX + x, 1, absChunkZ + z);
+                blocks[x][1][z] = Material.BEDROCK.getId();
             }
         }
     }

@@ -43,6 +43,7 @@ public class ConnectedClient extends Client {
 
     public int tick = 0;
     public int gamemode = 0;
+    public long loggedIn = 0;
 
     public int selectedSlot = 0; // begins at inv.slots.length - 9, or 36
 
@@ -123,7 +124,7 @@ public class ConnectedClient extends Client {
         } else if (packet instanceof PacketInClientSettings) {
             PacketInClientSettings instance = (PacketInClientSettings) packet;
             System.out.println("View distance: " + instance.viewDistance);
-            maxLoadedChunks = ((int)instance.viewDistance) * 2;
+            maxLoadedChunks = ((int)instance.viewDistance);
             maxLoadedBlocks = maxLoadedChunks * 16;
 
         } else if (packet instanceof PacketInPlayerBlockPlacement) {
@@ -188,17 +189,20 @@ public class ConnectedClient extends Client {
     @Override
     public void tick() {
         tick++;
+        loggedIn++;
         // Check that client is loaded area-wise
         if (tick % 5 == 0) {
             // Load chunks that are needed
-            ArrayList<Chunk> loadingChunks = new ArrayList<Chunk>();
+            ArrayList<Chunk> loadingChunks = (ArrayList<Chunk>) loadedChunks.clone();
 
-            for (double tempX = x - (maxLoadedBlocks / 2); tempX < x + (maxLoadedBlocks / 2); tempX += 16) {
-                for (double tempZ = z - (maxLoadedBlocks / 2); tempZ < z + (maxLoadedBlocks / 2); tempZ += 16) {
-                    Chunk c = world.getBlockAt((int)tempX, 1, (int)tempZ).chunk;
-                    if (!loadingChunks.contains(c)) {
-                        loadingChunks.add(c);
+            for (double tempX = (x / 16) - (maxLoadedChunks / 2); tempX < (x / 16) + (maxLoadedChunks / 2); tempX++) {
+                for (double tempZ = (z / 16) - (maxLoadedChunks / 2); tempZ < (z / 16) + (maxLoadedChunks / 2); tempZ++) {
+                    if (!world.isChunkLoaded((int)tempX, (int)tempZ)) {
+                        world.requestChunkLoad((int)tempX, (int)tempZ);
+                        continue;
                     }
+                    Chunk c = world.getChunkAt((int)tempX, (int)tempZ);
+                    loadingChunks.remove(c);
                     if (!loadedChunks.contains(c)) {
                         loadedChunks.add(c);
                         PacketOutChunkData world = new PacketOutChunkData(c.getX(), c.getZ(), false);
@@ -210,10 +214,8 @@ public class ConnectedClient extends Client {
             }
 
             // Find chunks to unload
-            for (Chunk c : loadedChunks.toArray(new Chunk[loadingChunks.size()])) {
-                if (!loadingChunks.contains(c)) {
-                    // Chunk out of range
-                    // Send unload
+            for (Chunk c : loadingChunks.toArray(new Chunk[loadingChunks.size()])) {
+                if (loggedIn > 200) {
                     loadedChunks.remove(c);
                     PacketOutChunkData world = new PacketOutChunkData(c.getX(), c.getZ(), true);
                     if (world.data != null) {

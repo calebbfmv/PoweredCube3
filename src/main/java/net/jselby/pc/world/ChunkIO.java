@@ -44,8 +44,8 @@ public class ChunkIO {
         for (int x = 0; x < c.blocks.length; x++) {
             for (int y = 0; y < c.blocks[x].length; y++) {
                 for (int z = 0; z < c.blocks[x][y].length; z++) {
-                    Block b = c.blocks[x][y][z];
-                    if (b != null) {
+                    int b = c.blocks[x][y][z];
+                    if (b != 0) {
                         blockCount++;
                     }
                 }
@@ -57,13 +57,13 @@ public class ChunkIO {
         for (int x = 0; x < c.blocks.length; x++) {
             for (int y = 0; y < c.blocks[x].length; y++) {
                 for (int z = 0; z < c.blocks[x][y].length; z++) {
-                    Block b = c.blocks[x][y][z];
-                    if (b != null) {
-                        dataOut.writeInt(b.x);
-                        dataOut.writeInt(b.y);
-                        dataOut.writeInt(b.z);
-                        dataOut.writeInt(b.getTypeId());
-                        dataOut.writeByte(b.getData());
+                    int b = c.blocks[x][y][z];
+                    if (b != 0) {
+                        dataOut.writeInt(x);
+                        dataOut.writeInt(y);
+                        dataOut.writeInt(z);
+                        dataOut.writeInt(b);
+                        dataOut.writeByte(c.data[x][y][z]);
                     }
                 }
             }
@@ -96,14 +96,13 @@ public class ChunkIO {
             int blockZ = dataIn.readInt();
             int blockId = dataIn.readInt();
             byte data = dataIn.readByte();
-            Block b = new Block(blockId, c, data, blockX, blockY, blockZ);
+
             int relBlockX = blockX - absChunkX;
-            int relBlockY = blockY - 1;
+            int relBlockY = blockY;
             int relBlockZ = blockZ - absChunkZ;
-            if (relBlockX < 0 || relBlockY < 0 || relBlockZ < 0 || relBlockX > 15 || relBlockY > 254 || relBlockZ > 15) {
-                System.out.println("Fatal chunk: " + relBlockX + ":" + relBlockY + ":" + relBlockZ);
-            }
-            c.blocks[relBlockX][relBlockY][relBlockZ] = b;
+
+            c.blocks[blockX][blockY][blockZ] = blockId;
+            c.data[blockX][blockY][blockZ] = data;
         }
 
         return c;

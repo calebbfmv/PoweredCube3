@@ -26,6 +26,7 @@ import net.jselby.pc.network.Client;
 import net.jselby.pc.network.NetworkServer;
 import net.jselby.pc.network.Packet;
 import net.jselby.pc.network.PacketDefinitions;
+import net.jselby.pc.world.ChunkLoadThread;
 import net.jselby.pc.world.PoweredCubeWorldLoader;
 import net.jselby.pc.world.World;
 import org.bukkit.Server;
@@ -61,9 +62,6 @@ public class PoweredCube {
 
     public PoweredCube(int port) throws Exception {
 
-        // JVisualVM debugging
-        System.out.println("Waiting for enter to be pressed.");
-        System.in.read();
         mainThread = Thread.currentThread();
 
         logger = new Logger(System.out);
@@ -97,10 +95,12 @@ public class PoweredCube {
                 System.exit(0);
             }
             worlds.add(w);
+            new ChunkLoadThread(w).start();
         } else {
             World w = new World("world", loader);
             worlds.add(w);
             loader.saveWorld(w);
+            new ChunkLoadThread(w).start();
         }
 
         // Load Bukkit plugins
@@ -131,11 +131,21 @@ public class PoweredCube {
         // Tick thread
         long maxWorkingTimePerFrame = 1000 / 20;
         long lastStartTime = System.currentTimeMillis();
+        long leftOvers = 0;
+        int tick = 1;
         while(true) {
             long elapsedTime = System.currentTimeMillis() - lastStartTime;
             lastStartTime = System.currentTimeMillis();
 
             tick();
+            tick++;
+            if (tick > 20) {
+                tick = 1;
+                if (leftOvers > 100) {
+                    System.out.println("Cannot keep up! Is the server overloaded?");
+                }
+                leftOvers = 0;
+            }
 
             long processingTimeForCurrentFrame = System.currentTimeMillis() - lastStartTime;
             if(processingTimeForCurrentFrame  < maxWorkingTimePerFrame) {
@@ -145,8 +155,7 @@ public class PoweredCube {
                     e.printStackTrace();
                 }
             } else {
-                System.err.println("Tick took too long: "
-                        + (processingTimeForCurrentFrame - elapsedTime) + " milliseconds too long!");
+                leftOvers += (processingTimeForCurrentFrame - elapsedTime);
             }
         }
     }

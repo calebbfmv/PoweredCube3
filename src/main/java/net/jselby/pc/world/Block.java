@@ -70,6 +70,7 @@ public class Block implements Serializable {
 
     public void setTypeId(int typeId, boolean update) {
         id = typeId;
+        chunk.blocks[x - (chunk.getX() * 16)][y][z - (chunk.getZ() * 16)] = id;
         if (update) {
             update();
         }
@@ -81,6 +82,7 @@ public class Block implements Serializable {
 
     public void setData(byte data, boolean update) {
         this.data = data;
+        chunk.data[x - (chunk.getX() * 16)][y][z - (chunk.getZ() * 16)] = this.data;
         if (update) {
             update();
         }

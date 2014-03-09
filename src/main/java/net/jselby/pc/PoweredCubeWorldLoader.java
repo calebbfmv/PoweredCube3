@@ -20,6 +20,7 @@ package net.jselby.pc;
 
 import net.jselby.pc.world.Chunk;
 import net.jselby.pc.world.World;
+import net.jselby.pc.world.WorldLoader;
 
 import java.io.*;
 import java.util.ArrayList;

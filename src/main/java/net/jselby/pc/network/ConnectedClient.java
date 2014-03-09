@@ -19,8 +19,8 @@
 package net.jselby.pc.network;
 
 import io.netty.channel.ChannelHandlerContext;
-import net.jselby.pc.ChatMessage;
-import net.jselby.pc.PlayerInventory;
+import net.jselby.pc.player.ChatMessage;
+import net.jselby.pc.player.PlayerInventory;
 import net.jselby.pc.blocks.ItemStack;
 import net.jselby.pc.blocks.Material;
 import net.jselby.pc.entities.FloatingItem;

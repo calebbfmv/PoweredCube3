@@ -16,7 +16,7 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package net.jselby.pc;
+package net.jselby.pc.player;
 
 import org.json.simple.JSONObject;
 

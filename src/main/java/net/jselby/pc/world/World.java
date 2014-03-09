@@ -21,10 +21,11 @@ package net.jselby.pc.world;
 import net.jselby.pc.*;
 import net.jselby.pc.blocks.Material;
 import net.jselby.pc.bukkit.BukkitWorld;
+import net.jselby.pc.entities.Entity;
+import net.jselby.pc.entities.EntityManager;
 import net.jselby.pc.entities.FloatingItem;
 import net.jselby.pc.network.Client;
 import net.jselby.pc.network.packets.mcplay.PacketOutDestroyEntities;
-import org.bukkit.util.noise.SimplexNoiseGenerator;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -129,7 +130,7 @@ public class World implements Serializable {
         if (getChunkAt(x, z, false) == null) {
             // See if we have already got a chunk saved
             if (loader.chunkExists(this, x, z)) {
-                System.out.println("Loading already loaded chunk: " + x + ":" + z);
+                System.out.println("Loading already generated chunk: " + x + ":" + z);
                 try {
                     chunks.add(loader.loadChunk(this, x, z));
                 } catch (Exception e) {

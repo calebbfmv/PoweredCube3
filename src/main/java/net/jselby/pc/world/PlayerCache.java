@@ -18,7 +18,6 @@
 
 package net.jselby.pc.world;
 
-import net.jselby.pc.PlayerInventory;
 import net.jselby.pc.network.Slot;
 
 import java.io.Serializable;

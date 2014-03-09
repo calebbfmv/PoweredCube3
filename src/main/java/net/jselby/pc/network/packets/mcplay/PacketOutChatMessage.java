@@ -18,7 +18,7 @@
 
 package net.jselby.pc.network.packets.mcplay;
 
-import net.jselby.pc.ChatMessage;
+import net.jselby.pc.player.ChatMessage;
 import net.jselby.pc.network.*;
 
 import java.io.IOException;

@@ -18,7 +18,6 @@
 
 package net.jselby.pc.entities;
 
-import net.jselby.pc.Entity;
 import net.jselby.pc.PoweredCube;
 import net.jselby.pc.network.*;
 import net.jselby.pc.network.packets.mcplay.PacketOutCollectItem;
@@ -26,9 +25,6 @@ import net.jselby.pc.network.packets.mcplay.PacketOutEntityMetadata;
 import net.jselby.pc.network.packets.mcplay.PacketOutSpawnObject;
 import net.jselby.pc.world.Block;
 import net.jselby.pc.world.World;
-
-import java.io.IOException;
-import java.io.Serializable;
 
 /**
  * Represents a floating itemstack. Simply stores a block id, and a data argument, and has the ability to

@@ -21,14 +21,12 @@ package net.jselby.pc.network;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelHandlerContext;
-import net.jselby.pc.PlayerInventory;
 import net.jselby.pc.entities.FloatingItem;
 import net.jselby.pc.world.Chunk;
 import net.jselby.pc.world.PlayerCache;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.UUID;
 

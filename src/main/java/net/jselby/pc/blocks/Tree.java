@@ -28,15 +28,19 @@ import java.util.Random;
  */
 public class Tree {
     public static void generate(Chunk chunk, int x, int y, int z, long seed) {
+        // Bug with world generator ?
+
+        y += 1;
         // Trunk
         Random r = new Random(seed);
         int trunkAdd = r.nextInt(3);
-        for (int buildY = y; buildY < y + 5 + trunkAdd; buildY++) {
+        for (int buildY = y; buildY < y + 3 + trunkAdd; buildY++) {
             chunk.getWorld().getBlockAt(x, buildY, z).setTypeId(Material.LOG.getId(), false);
+            chunk.getWorld().getBlockAt(x, buildY, z).setData((byte)0, false);
         }
 
         for (int buildX = x - 2; buildX <= x + 2; buildX++) {
-            for (int buildY = y + 4; buildY <= y + 3 + 3 + trunkAdd; buildY++) {
+            for (int buildY = y + 3; buildY <= y + 3 + 2 + trunkAdd; buildY++) {
                 if (buildY < 0) {
                     buildY = 0;
                 }

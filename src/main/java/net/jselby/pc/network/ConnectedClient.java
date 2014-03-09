@@ -151,10 +151,11 @@ public class ConnectedClient extends Client {
                         // Player isn't in creative mode - give them the block!
                         Material mat = Material.getMaterial(block.getTypeId());
                         // Make sure its breakable
-                        if (mat == Material.GRASS) {
-                            mat = Material.DIRT;
+                        mat = mat.getBreakBlock();
+                        if (mat != null) {
+                            world.spawnFloatingItem(instance.x + 0.5, instance.y + 0.5,
+                                    instance.z + 0.5, mat.getId(), block.getData());
                         }
-                        world.spawnFloatingItem(instance.x + 0.5, instance.y + 0.5, instance.z + 0.5, mat.getId(), block.getData());
                     }
                     block.breakNaturally();
                 }

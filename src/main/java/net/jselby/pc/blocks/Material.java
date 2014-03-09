@@ -914,4 +914,21 @@ public enum Material {
                 return false;
         }
     }
+
+    public Material getBreakBlock() {
+        switch(this) {
+            case GRASS:
+                return DIRT;
+            case LONG_GRASS:
+                return null;
+            case STONE:
+                return COBBLESTONE;
+            case LEAVES:
+                return null;
+            case LEAVES_2:
+                return null;
+            default:
+                return this;
+        }
+    }
 }

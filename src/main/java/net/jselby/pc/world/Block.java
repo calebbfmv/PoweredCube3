@@ -37,7 +37,6 @@ public class Block implements Serializable {
     public final int y;
     public final int z;
     public final Chunk chunk;
-    private BukkitBlock bukkitBlock;
 
     public Block(Material mat, Chunk chunk, int x, int y, int z) {
         this(mat.getId(), chunk, (byte) 0, x, y, z);
@@ -57,7 +56,6 @@ public class Block implements Serializable {
         this.y = y;
         this.z = z;
         this.chunk = chunk;
-        bukkitBlock = new BukkitBlock(this);
     }
 
     @SuppressWarnings("deprecation")
@@ -67,7 +65,7 @@ public class Block implements Serializable {
     }
 
     public org.bukkit.block.Block getBukkitBlock() {
-        return bukkitBlock;
+        return  new BukkitBlock(this);
     }
 
     public void setTypeId(int typeId, boolean update) {

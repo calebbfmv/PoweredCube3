@@ -60,6 +60,10 @@ public class PoweredCube {
     // End vanilla variables
 
     public PoweredCube(int port) throws Exception {
+
+        // JVisualVM debugging
+        System.out.println("Waiting for enter to be pressed.");
+        System.in.read();
         mainThread = Thread.currentThread();
 
         logger = new Logger(System.out);
@@ -121,7 +125,9 @@ public class PoweredCube {
         });
 
         System.out.println("Finished loading.");
+    }
 
+    public void doTickLoop() {
         // Tick thread
         long maxWorkingTimePerFrame = 1000 / 20;
         long lastStartTime = System.currentTimeMillis();
@@ -138,12 +144,15 @@ public class PoweredCube {
                 } catch(Exception e) {
                     e.printStackTrace();
                 }
+            } else {
+                System.err.println("Tick took too long: "
+                        + (processingTimeForCurrentFrame - elapsedTime) + " milliseconds too long!");
             }
         }
     }
 
     public void tick() {
-        for (Client c : clients) {
+        for (Client c : clients.toArray(new Client[clients.size()])) {
             c.tick();
         }
 
@@ -154,6 +163,7 @@ public class PoweredCube {
 
     public static void main(String[] args) throws Exception {
         PoweredCube server = new PoweredCube(25565);
+        server.doTickLoop();
         System.exit(0);
     }
 

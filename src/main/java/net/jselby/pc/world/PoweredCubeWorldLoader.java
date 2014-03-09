@@ -119,6 +119,10 @@ public class PoweredCubeWorldLoader extends WorldLoader {
     public void saveChunk(Chunk c) {
         //System.out.println("Saving chunk: " + c.getX() + ":" + c.getZ());
         try {
+            File parent = new File(c.world.getName() + "_chunks");
+            if (!parent.exists()) {
+                parent.mkdir();
+            }
             File chunkFile = new File(new File(c.world.getName() + "_chunks"), c.getX() + "-" + c.getZ() + ".chunk");
             OutputStream chunkOut = new FileOutputStream(chunkFile);
             chunkIO.write(chunkOut, c);

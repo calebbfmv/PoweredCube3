@@ -132,7 +132,6 @@ public class World implements Serializable {
         if (getChunkAt(x, z, false) == null) {
             // See if we have already got a chunk saved
             if (loader.chunkExists(this, x, z)) {
-                //System.out.println("Loading already generated chunk: " + x + ":" + z);
                 try {
                     chunks.add(loader.loadChunk(this, x, z));
                 } catch (Exception e) {
@@ -140,7 +139,6 @@ public class World implements Serializable {
                 }
                 return;
             }
-            //System.out.println("Generating chunk: " + x + ":" + z);
             Chunk c = new Chunk(this, x, z);
             chunks.add(c);
             c.generate();
@@ -235,6 +233,9 @@ public class World implements Serializable {
             ArrayList<Chunk> keepChunks = new ArrayList<Chunk>();
 
             for (Client c : PoweredCube.getInstance().clients.toArray(new Client[0])) {
+                if (c == null) {
+                    continue;
+                }
                 if (c.world != this) {
                     continue;
                 }
@@ -243,11 +244,16 @@ public class World implements Serializable {
                 }
             }
 
-            for (Chunk chunk : chunks.toArray(new Chunk[chunks.size()])) {
+            for (final Chunk chunk : chunks.toArray(new Chunk[chunks.size()])) {
                 if (!keepChunks.contains(chunk)) {
-                    //System.out.println("Unloading chunk " + chunk.getX() + ":" + chunk.getZ());
-                    loader.saveChunk(chunk);
-                    chunks.remove(chunk);
+                    // Do it in a thread
+                    Thread saveThread = new Thread() {
+                        @Override
+                        public void run() {
+                            loader.saveChunk(chunk);
+                            chunks.remove(chunk);
+                        }
+                    };
                 }
             }
 

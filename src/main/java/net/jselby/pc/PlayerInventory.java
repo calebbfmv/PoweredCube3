@@ -30,6 +30,8 @@ import org.bukkit.inventory.Inventory;
  * @author j_selby
  */
 public class PlayerInventory {
+    public static final int MAX_STACK_SIZE = 64;
+
     private Slot[] slots = new Slot[45];
     private Client c;
 
@@ -76,8 +78,8 @@ public class PlayerInventory {
         }
 
         // Found a slot, do something with it
-        if (stack.count + s.itemCount > 64) {
-            ItemStack left = new ItemStack(stack.id, stack.data, stack.count + s.itemCount - 64);
+        if (stack.count + s.itemCount > MAX_STACK_SIZE) {
+            ItemStack left = new ItemStack(stack.id, stack.data, stack.count + s.itemCount - MAX_STACK_SIZE);
             s.itemCount += stack.count - left.count;
             sendUpdate(s);
             return addItem(left);
@@ -115,7 +117,7 @@ public class PlayerInventory {
                 continue;
             }
             if (slots[i].itemId == stack.id && slots[i].itemDamage == stack.data) {
-                if (slots[i].itemCount > 63 && !allowFull) {
+                if (slots[i].itemCount > MAX_STACK_SIZE && !allowFull) {
                     continue;
                 }
                 return slots[i];

@@ -15,7 +15,8 @@ Currently working on:
   - Need to add protocol support
 
 TODO:
-- Ability to see other players
+- ** Chunk-per-chunk loading (vs currently whole world loading)
+- ** Ability to see other players
 - NBT support
 - Better world generation
 - Full implementation of protocol

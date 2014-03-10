@@ -37,7 +37,6 @@ public class PlayerDisplayer {
         Slot s = client.inv.getSlot(client.inv.getSize() - 9 + client.selectedSlot);
         if (s != null) {
             spawnPlayer.currentItem = (short) s.itemId;
-            System.out.println("Item: " + spawnPlayer.currentItem);
         }
         spawnPlayer.x = client.x;
         spawnPlayer.y = (client.y - 1.5);

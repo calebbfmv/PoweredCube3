@@ -39,7 +39,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 public class World implements Serializable {
     public static final int INITIAL_SIZE = 1;
     public static final int MAX_HEIGHT = 255;
-    public static final int MAX_CHUNKS = 0;
+    public static final int MAX_CHUNKS = -1;
 
     private String name;
     public ArrayList<Chunk> chunks = new ArrayList<Chunk>();

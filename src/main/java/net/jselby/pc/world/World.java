@@ -117,6 +117,9 @@ public class World implements Serializable {
     }
 
     public Chunk getChunkAt(int x, int z, boolean generateIfNotFound) {
+        if (chunks == null) {
+            return null;
+        }
         for (Chunk chunk : chunks.toArray(new Chunk[chunks.size()])) {
             if (chunk == null) {
                 continue;

@@ -186,6 +186,99 @@ public class ConnectedClient extends Client {
                 excludes.add(this);
                 PoweredCube.getInstance().distributePacket(out, excludes);
             }
+
+        } else if (packet instanceof PacketInClickWindow) {
+            PacketInClickWindow instance = (PacketInClickWindow) packet;
+            PacketOutConfirmTransaction response = new PacketOutConfirmTransaction();
+
+            response.windowId = instance.windowId;
+            response.actionNumber = instance.actionNumber;
+
+            switch(instance.action) {
+                case LEFT_CLICK:
+                    System.out.println("Left click!");
+
+                    if (selectedItem == null) {
+                        // Select item
+                        selectedItem = inv.getSlot(instance.slot);
+                        inv.setSlot(instance.slot, new Slot(instance.slot, -1, -1, (byte) 0));
+                        System.out.println("Is null: " + (selectedItem == null));
+                        if (selectedItem != null) {
+                            System.out.println("Selected a "
+                                    + Material.getMaterial(selectedItem.itemId).name()
+                                    + " from slot " + instance.slot);
+                        }
+
+                    } else {
+                        selectedItem.position = instance.slot;
+                        Slot currentContents = inv.getSlot(instance.slot);
+                        if (currentContents != null) {
+                            System.out.println("Current contents!");
+
+                            if (currentContents.itemId != selectedItem.itemId
+                                    || currentContents.itemDamage != selectedItem.itemDamage) {
+                                System.out.println("Different item!");
+                                System.out.println("Switching selected item from "
+                                        + Material.getMaterial(selectedItem.itemId).name() + " to "
+                                        + Material.getMaterial(currentContents.itemId).name());
+                                inv.setSlot(instance.slot, selectedItem);
+                                selectedItem = currentContents;
+                            } else {
+                                System.out.println("Same item!");
+                                if (currentContents.itemCount + selectedItem.itemCount
+                                        > PlayerInventory.MAX_STACK_SIZE) {
+                                    int leftOver = (currentContents.itemCount
+                                            + selectedItem.itemCount - PlayerInventory.MAX_STACK_SIZE);
+                                    System.out.println("Overflow by "
+                                            + leftOver);
+                                    currentContents.itemCount = PlayerInventory.MAX_STACK_SIZE;
+                                    inv.sendUpdate(currentContents);
+                                    selectedItem = new Slot(currentContents.itemId,
+                                            leftOver, currentContents.itemDamage);
+                                } else {
+                                    currentContents.itemCount = currentContents.itemCount + selectedItem.itemCount;
+                                    System.out.println("New contents count: " + currentContents.itemCount);
+                                    inv.sendUpdate(currentContents);
+                                }
+                            }
+                        } else {
+                            inv.setSlot(instance.slot, selectedItem);
+                            System.out.println("Moved to slot " + instance.slot);
+                        }
+                        selectedItem = null;
+                    }
+                    response.accepted = true;
+                    break;
+                case RIGHT_CLICK:
+                    System.out.println("Right click!");
+                    if (selectedItem == null) {
+                        // Split stack
+                        Slot contents = inv.getSlot(instance.slot);
+                        if (contents.itemCount == 1) {
+                            System.out.println("Single item!");
+                            selectedItem = contents;
+                            inv.setSlot(contents.position, null);
+                        } else {
+                            System.out.println("Multiple item!");
+                            Slot otherSlot = new Slot(contents.position,
+                                    contents.itemId, contents.itemCount / 2, contents.itemDamage);
+                            selectedItem = otherSlot;
+                            System.out.println("Picked up count: " + otherSlot.itemCount);
+                            contents.itemCount = contents.itemCount - otherSlot.itemCount;
+                            System.out.println("Left: " + contents.itemCount);
+                            inv.sendUpdate(contents);
+                        }
+                        //if (selectedItem)
+                    }
+                    response.accepted = true;
+                    break;
+                default:
+                    response.accepted = false;
+                    break;
+            }
+            System.out.println(instance.action.name());
+            writePacket(response);
+            inv.updateAll();
         }
 
         // Update the cache

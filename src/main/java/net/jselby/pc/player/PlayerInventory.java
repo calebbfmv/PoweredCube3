@@ -99,14 +99,13 @@ public class PlayerInventory {
     }
 
     public void updateAll() {
-        for (Slot s : slots) {
+        for (int i = 0; i < slots.length; i++) {
+            Slot s = slots[i];
             if (s == null) {
-                continue;
+                sendUpdate(new Slot(i, -1, -1, (byte)0));
+            } else {
+                sendUpdate(s);
             }
-            PacketOutSetSlot slot = new PacketOutSetSlot();
-            slot.slotData = s;
-            slot.slot = (short) s.position;
-            c.writePacket(slot);
         }
     }
 
@@ -173,5 +172,14 @@ public class PlayerInventory {
 
     public int getSize() {
         return slots.length;
+    }
+
+    public void setSlot(int position, Slot slot1) {
+        if (slot1.itemId == -1 || slot1.itemCount == -1) {
+            slots[position] = null;
+        } else {
+            slots[position] = slot1;
+        }
+        sendUpdate(slot1);
     }
 }

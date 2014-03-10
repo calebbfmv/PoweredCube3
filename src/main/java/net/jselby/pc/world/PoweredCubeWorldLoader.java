@@ -77,7 +77,7 @@ public class PoweredCubeWorldLoader extends WorldLoader {
                 file.mkdir();
             }
             ArrayList<String> alreadySaved = new ArrayList<String>();
-            for (Chunk c : chunks) {
+            for (Chunk c : chunks.toArray(new Chunk[chunks.size()])) {
                 if (alreadySaved.contains(c.getX() + ":" + c.getZ())) {
                     System.out.println("We have a duplicate chunk at " + c.getX() + ":" + c.getZ());
                     continue;

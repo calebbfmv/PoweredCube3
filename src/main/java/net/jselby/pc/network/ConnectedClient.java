@@ -174,6 +174,17 @@ public class ConnectedClient extends Client {
         } else if (packet instanceof PacketInHeldItemChange) {
             PacketInHeldItemChange instance = (PacketInHeldItemChange) packet;
             selectedSlot = instance.slot;
+
+        } else if (packet instanceof PacketInAnimation) {
+            PacketInAnimation instance = (PacketInAnimation) packet;
+            if (instance.animation == 1) {
+                PacketOutAnimation out = new PacketOutAnimation();
+                out.entityId = id;
+                out.animationId = 0;
+                ArrayList<Client> excludes = new ArrayList<Client>();
+                excludes.add(this);
+                PoweredCube.getInstance().distributePacket(out, excludes);
+            }
         }
 
         // Update the cache

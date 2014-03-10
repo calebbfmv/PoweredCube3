@@ -14,9 +14,19 @@ Currently working on:
 - Inventory management - movement, crafting, and so on
   - Need to add protocol support
 
+Currently working/done:
+- Joining
+- Ability to see other players
+- Digging
+- Basic item entities
+- Basic inventory storage
+- Persistence
+- Dynamic chunk loading/unloading (both client and server)
+- Infinite world
+  - Perlin generator
+
 TODO:
-- ** Chunk-per-chunk loading (vs currently whole world loading)
-- ** Ability to see other players
+- ** Code cleanup
 - NBT support
 - Better world generation
 - Full implementation of protocol
@@ -27,6 +37,7 @@ TODO:
   - Full event implementation
 - Adding actions to blocks
 - Implementing mobs
+- Protocol encryption
 
 We need your help!
 We cannot do this on our own - every bit of help counts!

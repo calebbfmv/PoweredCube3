@@ -18,7 +18,9 @@
 
 package net.jselby.pc.entities;
 
+import net.jselby.pc.PoweredCube;
 import net.jselby.pc.network.*;
+import net.jselby.pc.network.packets.mcplay.PacketOutEntityHeadLook;
 import net.jselby.pc.network.packets.mcplay.PacketOutSpawnPlayer;
 
 /**
@@ -29,8 +31,14 @@ public class PlayerDisplayer {
         PacketOutSpawnPlayer spawnPlayer = new PacketOutSpawnPlayer();
         spawnPlayer.entityId = client.id;
         spawnPlayer.name = client.displayName;
-        spawnPlayer.yaw = (byte) (client.yaw);
+
+        spawnPlayer.yaw = (byte) ((Math.toRadians(client.yaw) * 10 * 4));
         spawnPlayer.pitch = (byte) (client.pitch);
+        Slot s = client.inv.getSlot(client.inv.getSize() - 9 + client.selectedSlot);
+        if (s != null) {
+            spawnPlayer.currentItem = (short) s.itemId;
+            System.out.println("Item: " + spawnPlayer.currentItem);
+        }
         spawnPlayer.x = client.x;
         spawnPlayer.y = (client.y - 1.5);
         spawnPlayer.z = client.z;
@@ -64,5 +72,12 @@ public class PlayerDisplayer {
                 new EntityPosition(EntityMetadata.Types.BYTE, (byte)11), new WritableByte((byte)1));
 
         toWhom.writePacket(spawnPlayer);
+
+        PacketOutEntityHeadLook look = new PacketOutEntityHeadLook();
+        look.entityId = client.id;
+        look.pitch = client.pitch;
+        look.yaw = client.yaw;
+
+        toWhom.writePacket(look);
     }
 }

@@ -44,7 +44,7 @@ public class ClientConnectionHandler extends ChannelHandlerAdapter {
 
         // Switch the client, if the state has changed
         if (cl.state == PacketDefinitions.State.PLAY && !(cl instanceof ConnectedClient)) {
-            Client newClient = new ConnectedClient(ctx);
+            Client newClient = new ConnectedClient(ctx, cl.name);
             newClient.name = cl.name;
             newClient.uuid = cl.uuid;
             newClient.pitch = cl.pitch;

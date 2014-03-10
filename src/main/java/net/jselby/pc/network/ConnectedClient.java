@@ -55,9 +55,10 @@ public class ConnectedClient extends Client {
      * Creates a ConnectedClient from a ALREADY existing connection.
      * @param ctx The context of the connection
      */
-    public ConnectedClient(ChannelHandlerContext ctx) {
+    public ConnectedClient(ChannelHandlerContext ctx, String name) {
         super(ctx);
         world = PoweredCube.getInstance().getWorlds().get(0); // Default world
+        loadCache(name);
     }
 
     @Override
@@ -67,21 +68,9 @@ public class ConnectedClient extends Client {
         double lastZ = z;
         float lastYaw = yaw;
         float lastPitch = pitch;
+        int lastSelectedSlot = selectedSlot;
         //if (packet.getId() != 3 && packet.getId() != 0 && packet.getId() != 4 && packet.getId() != 5 && packet.getId() != 6)
         //    System.out.println("Got packet: " + packet.getId());
-        // Check for the player "cache"
-        if (cache == null) {
-            cache = world.getPlayerCache(name);
-            if (cache.inventory != null) {
-                inv.setInventory(cache.inventory);
-                inv.updateAll();
-            } else {
-                // Give starting goods!
-                inv.addItem(new ItemStack(Material.DIAMOND_PICKAXE.getId(), (byte)0, 1));
-                inv.addItem(new ItemStack(Material.DIAMOND_SPADE.getId(), (byte)0, 1));
-                inv.addItem(new ItemStack(Material.DIAMOND_AXE.getId(), (byte)0, 1));
-            }
-        }
 
         if (packet instanceof PacketInPlayer) {
             // Check if player is onGround
@@ -195,6 +184,7 @@ public class ConnectedClient extends Client {
         cache.pitch = pitch;
         cache.inventory = inv.getArray();
 
+        // Update position on other clients
         if (lastX != x || lastY != y || lastZ != z || lastYaw != yaw || lastPitch != pitch) {
             double differenceX = x - lastX;
             double differenceY = y - lastY;
@@ -206,18 +196,43 @@ public class ConnectedClient extends Client {
                 System.out.println("Teleport!");
             } else {
                 PacketOutEntityLookRelativeMove movement = new PacketOutEntityLookRelativeMove();
-                movement.pitch = (byte) (pitch / 360);
-                movement.yaw = (byte) (yaw / 360);
+
+
+                movement.pitch = (byte) (Math.toRadians(pitch) * 10 * 4);
+                movement.yaw = (byte) (Math.toRadians(yaw) * 10 * 4);
+
                 movement.entityId = id;
                 movement.x = (byte) (differenceX * 36);
                 movement.y = (byte) (differenceY * 36);
                 movement.z = (byte) (differenceZ * 36);
                 ArrayList<Client> excludes = new ArrayList<Client>();
                 excludes.add(this);
+
+                PacketOutEntityHeadLook look = new PacketOutEntityHeadLook();
+                look.entityId = id;
+                look.pitch = pitch;
+                look.yaw = yaw;
+
                 PoweredCube.getInstance().distributePacket(movement, excludes);
+                PoweredCube.getInstance().distributePacket(look, excludes);
             }
         }
 
+        // Update equipment on other clients
+        if (!(lastSelectedSlot == selectedSlot)) {
+            PacketOutEntityEquipment equipment = new PacketOutEntityEquipment();
+            Slot s = inv.getSlot(inv.getSize() - 9 + selectedSlot);
+            if (s == null) {
+                equipment.item = new Slot(-1, -1, (byte)0);
+            } else {
+                equipment.item = s;
+            }
+            equipment.entityId = id;
+            equipment.position = 0;
+            ArrayList<Client> excludes = new ArrayList<Client>();
+            excludes.add(this);
+            PoweredCube.getInstance().distributePacket(equipment, excludes);
+        }
     }
 
     public long timeOfDay = 6000;
@@ -259,7 +274,7 @@ public class ConnectedClient extends Client {
                     continue;
                 }
                 if (loggedIn > 200) {
-                    System.out.println("Unloading chunk: " + c);
+                    //System.out.println("Unloading chunk: " + c);
                     /*loadedChunks.remove(c);
                     PacketOutChunkData world = new PacketOutChunkData(c.getX(), c.getZ(), true);
                     if (world.data != null) {
@@ -303,5 +318,18 @@ public class ConnectedClient extends Client {
         ItemStack newItem = new ItemStack(item.getId(), item.getData(), item.count);
 
         return inv.addItem(newItem) != null;
+    }
+
+    private void loadCache(String name) {
+        cache = world.getPlayerCache(name);
+        if (cache.inventory != null) {
+            inv.setInventory(cache.inventory);
+            inv.updateAll();
+        } else {
+            // Give starting goods!
+            inv.addItem(new ItemStack(Material.DIAMOND_PICKAXE.getId(), (byte)0, 1));
+            inv.addItem(new ItemStack(Material.DIAMOND_SPADE.getId(), (byte)0, 1));
+            inv.addItem(new ItemStack(Material.DIAMOND_AXE.getId(), (byte)0, 1));
+        }
     }
 }

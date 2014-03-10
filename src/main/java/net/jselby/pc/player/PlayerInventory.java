@@ -170,4 +170,8 @@ public class PlayerInventory {
     public Slot[] getArray() {
         return slots;
     }
+
+    public int getSize() {
+        return slots.length;
+    }
 }

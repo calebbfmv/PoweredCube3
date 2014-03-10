@@ -19,6 +19,7 @@
 package net.jselby.pc.network;
 
 import io.netty.channel.ChannelHandlerContext;
+import net.jselby.pc.entities.Player;
 import net.jselby.pc.player.ChatMessage;
 import net.jselby.pc.player.PlayerInventory;
 import net.jselby.pc.blocks.ItemStack;
@@ -47,8 +48,10 @@ public class ConnectedClient extends Client {
     public long loggedIn = 0;
 
     public int selectedSlot = 0; // begins at inv.slots.length - 9, or 36
+    public Slot selectedItem = null; // Moving items in inventory
 
     public PlayerInventory inv = new PlayerInventory(this);
+    public Player player = new Player(this);
     public float health = 20;
 
     /**
@@ -119,12 +122,10 @@ public class ConnectedClient extends Client {
 
         } else if (packet instanceof PacketInClientSettings) {
             PacketInClientSettings instance = (PacketInClientSettings) packet;
-            System.out.println("View distance: " + instance.viewDistance);
             maxLoadedChunks = ((int)instance.viewDistance);
             if (maxLoadedChunks > PoweredCube.getInstance().getMaxViewDistance()) {
                 maxLoadedChunks = PoweredCube.getInstance().getMaxViewDistance();
             }
-            System.out.println("Client view distance " + instance.viewDistance + ", set to " + maxLoadedChunks);
             maxLoadedBlocks = maxLoadedChunks * 16;
 
 
@@ -246,67 +247,9 @@ public class ConnectedClient extends Client {
         }
     }
 
-    public long timeOfDay = 6000;
     @Override
     public void tick() {
-        tick++;
-        loggedIn++;
-        // Check that client is loaded area-wise
-        if (tick % 20 == 0) {
-            // Load chunks that are needed
-            ArrayList<Chunk> loadingChunks = (ArrayList<Chunk>) loadedChunks.clone();
-
-            for (int tempX = (int) (Math.floor(x / 16) - (maxLoadedChunks)); tempX < Math.floor(x / 16) + (maxLoadedChunks); tempX++) {
-                for (int tempZ = (int) (Math.floor(z / 16) - (maxLoadedChunks)); tempZ < Math.floor(z / 16) + (maxLoadedChunks); tempZ++) {
-                    if (!world.isChunkLoaded((int)tempX, (int)tempZ)) {
-                        // Don't force the chunk load, let it happen by the ChunkLoadThread
-                        world.requestChunkLoad((int)tempX, (int)tempZ);
-                        continue;
-                    }
-
-                    Chunk c = world.getChunkAt((int)tempX, (int)tempZ);
-                    loadingChunks.remove(c);
-
-                    if (!loadedChunks.contains(c)) {
-                        loadedChunks.add(c);
-                        // Send data to client
-                        PacketOutChunkData world = new PacketOutChunkData(c.getX(), c.getZ(), false);
-                        if (world.data != null && world.data.length != 0) {
-                            writePacket(world);
-                        }
-                    }
-                }
-            }
-
-            // Find chunks to unload
-            for (Chunk c : loadingChunks.toArray(new Chunk[loadingChunks.size()])) {
-                // Give the client a few ticks to load first
-                if (c == null) {
-                    continue;
-                }
-                if (loggedIn > 200) {
-                    //System.out.println("Unloading chunk: " + c);
-                    /*loadedChunks.remove(c);
-                    PacketOutChunkData world = new PacketOutChunkData(c.getX(), c.getZ(), true);
-                    if (world.data != null) {
-                        writePacket(world);
-                    }*/
-                }
-            }
-        }
-
-        if (tick % 20 == 0) {
-            // Keep the client sync'd up with the world time
-            PacketOutTimeUpdate time = new PacketOutTimeUpdate();
-            time.timeOfDay = timeOfDay+=20;
-            time.ageOfWorld = 0;
-
-            writePacket(time);
-        }
-        if (tick % 20 == 0) {
-            writePacket(new PacketKeepAlive());
-            tick = 0;
-        }
+        player.tick();
     }
 
     @Override
